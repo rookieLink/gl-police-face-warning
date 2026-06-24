@@ -9,6 +9,45 @@
   background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #0d0d2b 100%);
 }
 
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(100, 200, 255, 0.6);
+    border-radius: 50%;
+    animation: particleFloat linear infinite;
+    box-shadow: 0 0 10px rgba(100, 200, 255, 0.4);
+    transform: translateY(100vh);
+  }
+}
+
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1);
+    opacity: 0;
+  }
+}
+
+
 .login-bg {
   position: absolute;
   top: 0;
@@ -128,17 +167,11 @@
   margin-bottom: 40px;
 
   .logo-icon {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, #00d4ff, #7c3aed);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    color: white;
-    box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
     animation: iconFloat 3s ease-in-out infinite;
   }
 
@@ -187,7 +220,7 @@
     input {
       color: #fff !important;
       font-size: 15px;
-      transition: background-color 5000s ease-in-out 0s;
+      transition: background-color 50000s ease-in-out 0s;
 
       &::placeholder {
         color: rgba(255, 255, 255, 0.35);

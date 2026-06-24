@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Form, Input, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined, WechatOutlined, QqOutlined, GithubOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -27,21 +27,50 @@ export default function Login() {
       setLoading(false);
     }
   };
+  const particles = useMemo(() =>
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      animationDuration: `${6 + Math.random() * 10}s`,
+      animationDelay: `${Math.random() * 5}s`,
+      size: `${2 + Math.random() * 4}px`,
+    })),
+    []
+  );
+
 
   return (
     <div className="login-container">
+
       <div className="login-bg">
         <div className="grid-overlay" />
         <div className="floating-orb orb-1" />
         <div className="floating-orb orb-2" />
         <div className="floating-orb orb-3" />
+
+      </div>
+            {/* 做背景动画用 */}
+      <div className="particles">
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className="particle"
+            style={{
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              animationDuration: p.animationDuration,
+              animationDelay: p.animationDelay,
+            }}
+          />
+        ))}
       </div>
 
       <div className="login-card">
         <div className="scan-line" />
 
         <div className="login-header">
-          <div className="logo-icon">⚡</div>
+          <img src="/Police_Badge_of_China.svg" alt="公安警徽" className="logo-icon" />
           <h1>鼓楼分局巡防条线</h1>
           <p>智能预警系统 v1.0</p>
         </div>
