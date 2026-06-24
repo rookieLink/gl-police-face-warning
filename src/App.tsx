@@ -1,14 +1,19 @@
-import { useState } from 'react'
-import { Button } from 'antd';
+import { Routes, Route } from 'react-router-dom'
+import BasicLayout from './layouts/BasicLayout'
+import Home from './pages/Home'
+import User from './pages/User'
+import Setting from './pages/Setting'
 import './App.scss'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <Button>zhangfeng</Button>
-    </>
+    <Routes>
+      <Route element={<BasicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/user" element={<User />} />
+        <Route path="/setting" element={<Setting />} />
+      </Route>
+    </Routes>
   )
 }
 
