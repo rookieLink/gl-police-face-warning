@@ -3,11 +3,13 @@ import BasicLayout from './layouts/BasicLayout'
 import Home from './pages/Home'
 import User from './pages/User'
 import Setting from './pages/Setting'
+import Login from './pages/Login/Login'
 import './App.scss'
 
 function App() {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
       <Route element={<BasicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/user" element={<User />} />
