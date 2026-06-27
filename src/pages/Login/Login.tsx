@@ -27,16 +27,20 @@ export default function Login() {
       setLoading(false);
     }
   };
-  const particles = useMemo(() =>
-    Array.from({ length: 30 }, (_, i) => ({
+  const particles = useMemo(() => {
+    const seed = 12345;
+    const pseudoRandom = (index: number, offset: number) => {
+      const x = Math.sin(seed + index * 13 + offset * 7) * 10000;
+      return x - Math.floor(x);
+    };
+    return Array.from({ length: 30 }, (_, i) => ({
       id: i,
-      left: `${Math.random() * 100}%`,
-      animationDuration: `${6 + Math.random() * 10}s`,
-      animationDelay: `${Math.random() * 5}s`,
-      size: `${2 + Math.random() * 4}px`,
-    })),
-    []
-  );
+      left: `${pseudoRandom(i, 0) * 100}%`,
+      animationDuration: `${6 + pseudoRandom(i, 1) * 10}s`,
+      animationDelay: `${pseudoRandom(i, 2) * 5}s`,
+      size: `${2 + pseudoRandom(i, 3) * 4}px`,
+    }));
+  }, []);
 
 
   return (

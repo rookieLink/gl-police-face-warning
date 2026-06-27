@@ -1,9 +1,14 @@
-import { Layout, Menu } from 'antd';
+import { useState } from 'react';
+import { Layout, Menu, Dropdown, Avatar, Space, Modal, Descriptions, Button } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   HomeOutlined,
   UserOutlined,
   SettingOutlined,
+  LogoutOutlined,
+  InfoCircleOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
@@ -14,32 +19,131 @@ const menuItems = [
   { key: '/setting', icon: <SettingOutlined />, label: '系统设置' },
 ];
 
+const userInfo = {
+  name: '管理员',
+  role: '系统管理员',
+  department: '技术部',
+  email: 'admin@example.com',
+  phone: '138****8888',
+};
+
 export default function BasicLayout() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [userModalVisible, setUserModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleLogout = () => {
+    Modal.confirm({
+      title: '确认登出',
+      content: '确定要退出登录吗？',
+      cancelText: '取消',
+      okText: '确认',
+      onOk: () => {
+        navigate('/login');
+      },
+    });
+  };
+
+  const handleUserAction = ({ key }: { key: string }) => {
+    if (key === 'info') {
+      setUserModalVisible(true);
+    } else if (key === 'logout') {
+      handleLogout();
+    }
+  };
+
+  const userMenuItems = [
+    {
+      key: 'info',
+      icon: <InfoCircleOutlined />,
+      label: '个人信息',
+    },
+    {
+      type: 'divider' as const,
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+      danger: true,
+    },
+  ];
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible>
-        <div style={{ height: 32, margin: 16, color: '#fff', fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
-          Antd Demo
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={({ key }) => navigate(key)}
-        />
-      </Sider>
+      <Header
+        style={{
+          padding: '0 24px',
+          background: '#001529',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+        }}
+      >
+        <Space>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{ color: '#fff', fontSize: 16 }}
+          />
+          <span style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
+            Antd Admin
+          </span>
+        </Space>
+        <Dropdown
+          menu={{ items: userMenuItems, onClick: handleUserAction }}
+          placement="bottomRight"
+          arrow
+        >
+          <Space style={{ cursor: 'pointer', color: '#fff', marginRight: '10px' }}>
+            <Avatar style={{ backgroundColor: '#1890ff' }} icon={<UserOutlined />} />
+            <span>{userInfo.name}</span>
+          </Space>
+        </Dropdown>
+      </Header>
       <Layout>
-        <Header style={{ padding: '0 24px', background: '#fff', fontSize: 16, fontWeight: 'bold' }}>
-          Ant Design Demo
-        </Header>
-        <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8 }}>
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          theme="dark"
+        >
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            items={menuItems}
+            onClick={({ key }) => navigate(key)}
+          />
+        </Sider>
+        <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8, minHeight: 280 }}>
           <Outlet />
         </Content>
       </Layout>
+
+      <Modal
+        title="个人信息"
+        open={userModalVisible}
+        onCancel={() => setUserModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setUserModalVisible(false)}>
+            关闭
+          </Button>,
+        ]}
+      >
+        <Descriptions column={1} bordered size="small">
+          <Descriptions.Item label="用户名">{userInfo.name}</Descriptions.Item>
+          <Descriptions.Item label="角色">{userInfo.role}</Descriptions.Item>
+          <Descriptions.Item label="部门">{userInfo.department}</Descriptions.Item>
+          <Descriptions.Item label="邮箱">{userInfo.email}</Descriptions.Item>
+          <Descriptions.Item label="手机号">{userInfo.phone}</Descriptions.Item>
+        </Descriptions>
+      </Modal>
     </Layout>
   );
 }
