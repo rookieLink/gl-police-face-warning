@@ -7,8 +7,6 @@ import {
   SettingOutlined,
   LogoutOutlined,
   InfoCircleOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   DashboardOutlined,
   TeamOutlined,
   FileOutlined,
@@ -198,20 +196,16 @@ export default function BasicLayout() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          position: 'sticky',
+          position: 'fixed',
           top: 0,
+          left: 0,
+          right: 0,
           zIndex: 100,
         }}
       >
         <Space>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ color: '#fff', fontSize: 16 }}
-          />
           <span style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
-            Antd Admin
+            鼓楼分局巡防条线
           </span>
         </Space>
         <Dropdown
@@ -225,13 +219,21 @@ export default function BasicLayout() {
           </Space>
         </Dropdown>
       </Header>
-      <Layout>
+      <Layout style={{ paddingTop: 64 }}>
         <Sider
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
           theme="dark"
           width={220}
+          style={{
+            position: 'fixed',
+            top: 64,
+            left: 0,
+            bottom: 0,
+            zIndex: 99,
+            overflow: 'auto',
+          }}
         >
           <Menu
             theme="dark"
@@ -248,7 +250,7 @@ export default function BasicLayout() {
             }}
           />
         </Sider>
-        <Layout>
+        <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: 'margin-left 0.2s' }}>
           <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0' }}>
             <Breadcrumb items={breadcrumbItems} />
           </div>
