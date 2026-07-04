@@ -48,9 +48,7 @@ function BaiduMap({ lat, lng }: BaiduMapProps) {
     };
     const infoWindow = new window.BMap.InfoWindow(
       `<div style="padding: 10px;">
-        <p><strong>坐标：</strong>
-        ${lat.toFixed(6)}, ${lng.toFixed(6)}
-        </p>
+        <p><strong>坐标：</strong>${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
       </div>`,
       opts
     );
@@ -79,7 +77,8 @@ export default function User() {
   const [pushLoading, setPushLoading] = useState(false);
   const [dataSource, setDataSource] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0, showSizeChanger: false, showQuickJumper: false });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [searchParams, setSearchParams] = useState<SearchParams>({});
 
   const fetchUsers = async (params: SearchParams = {}) => {
     setLoading(true);
@@ -101,7 +100,6 @@ export default function User() {
         setLoading(true);
         const data = await searchUsers({});
         if (!abortController.signal.aborted) {
-          console.log('test', data)
           setDataSource(data.list.map((item) => ({ ...item, key: item.id })));
           setPagination(prev => ({ ...prev, total: data.total }));
         }
@@ -120,11 +118,15 @@ export default function User() {
 
   const handleSearch = (values?: SearchParams) => {
     const formValues = values || form.getFieldsValue();
+    setSearchParams(formValues);
+    setPagination(prev => ({ ...prev, current: 1 }));
     fetchUsers(formValues);
   };
 
   const handleReset = () => {
     form.resetFields();
+    setSearchParams({});
+    setPagination(prev => ({ ...prev, current: 1 }));
     fetchUsers({});
   };
 
@@ -147,8 +149,9 @@ export default function User() {
   };
 
   const handleTableChange = (pag: { current?: number; pageSize?: number }) => {
-    setPagination(prev => ({ ...prev, current: pag.current || 1, pageSize: pag.pageSize || 10 }));
-    // fetchUsers()
+    const newPagination = { ...pagination, current: pag.current || 1, pageSize: pag.pageSize || 10 };
+    setPagination(newPagination);
+    fetchUsers({ ...searchParams, currentPage: newPagination.current, pageSize: newPagination.pageSize });
   };
 
   const columns = [

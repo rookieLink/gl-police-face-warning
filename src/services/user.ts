@@ -29,6 +29,8 @@ api.interceptors.response.use(
 export interface SearchParams {
   sfz?: string;
   yjdw?: string;
+  currentPage?: number;
+  pageSize?: number;
 }
 
 /** 查询结果项 */
@@ -52,6 +54,7 @@ export interface ApiResponse {
 }
 
 export const searchUsers = async (params: SearchParams): Promise<ApiResponse> => {
+  console.log('params:', params)
   const res = await api.post<ApiResponse>('/api/gulou-face/search', params);
   return res as unknown as ApiResponse;
 };
