@@ -53,8 +53,20 @@ export interface ApiResponse {
   total: number;
 }
 
+/** 查询所有数据的参数 */
+export interface ListParams {
+  sfz?: string;
+  yjdw?: string;
+}
+
+/** 查询所有数据 */
+export const fetchAllUsers = async (params: ListParams = {}): Promise<ApiResponse> => {
+  const res = await api.post<ApiResponse>('/api/gulou-face/list', params);
+  return res as unknown as ApiResponse;
+};
+
+/** 查询数据（分页） */
 export const searchUsers = async (params: SearchParams): Promise<ApiResponse> => {
-  console.log('params:', params)
   const res = await api.post<ApiResponse>('/api/gulou-face/search', params);
   return res as unknown as ApiResponse;
 };

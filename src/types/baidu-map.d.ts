@@ -6,6 +6,8 @@ declare namespace BMap {
     addControl(control: NavigationControl | ScaleControl): void;
     addOverlay(overlay: Marker): void;
     openInfoWindow(infoWindow: InfoWindow, point: Point): void;
+    getViewport(points: Point[]): { center: Point; zoom: number };
+    clearOverlays(): void;
     destroy(): void;
   }
 

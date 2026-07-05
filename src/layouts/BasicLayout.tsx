@@ -13,6 +13,7 @@ import {
   BarChartOutlined,
   SafetyCertificateOutlined,
   LockOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -49,6 +50,11 @@ const routeConfig: RouteConfig[] = [
       { path: '/user/role', label: '角色管理', icon: <SafetyCertificateOutlined /> },
       { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
     ],
+  },
+  {
+    path: '/warning-map',
+    label: '预警地图',
+    icon: <EnvironmentOutlined />,
   },
   {
     path: '/content',
