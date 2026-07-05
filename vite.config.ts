@@ -9,7 +9,7 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] })
   ],
   build: {
-    outDir: 'static',
+    outDir: 'dist',
     emptyOutDir: true,
   },
 })
