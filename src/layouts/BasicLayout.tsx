@@ -4,15 +4,15 @@ import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   HomeOutlined,
   UserOutlined,
-  SettingOutlined,
+  // SettingOutlined,
   LogoutOutlined,
   InfoCircleOutlined,
   DashboardOutlined,
   TeamOutlined,
-  FileOutlined,
-  BarChartOutlined,
+  // FileOutlined,
+  // BarChartOutlined,
   SafetyCertificateOutlined,
-  LockOutlined,
+  // LockOutlined,
   EnvironmentOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
@@ -46,9 +46,9 @@ const routeConfig: RouteConfig[] = [
     label: '用户管理',
     icon: <TeamOutlined />,
     children: [
-      { path: '/user/list', label: '用户列表' },
-      { path: '/user/role', label: '角色管理', icon: <SafetyCertificateOutlined /> },
-      { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
+      // { path: '/user/list', label: '用户列表' },
+      { path: '/user/role', label: '人员管理', icon: <SafetyCertificateOutlined /> },
+      // { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
     ],
   },
   {
@@ -56,25 +56,25 @@ const routeConfig: RouteConfig[] = [
     label: '预警地图',
     icon: <EnvironmentOutlined />,
   },
-  {
-    path: '/content',
-    label: '内容管理',
-    icon: <FileOutlined />,
-    children: [
-      { path: '/content/article', label: '文章管理' },
-      { path: '/content/category', label: '分类管理' },
-    ],
-  },
-  {
-    path: '/report',
-    label: '报表中心',
-    icon: <BarChartOutlined />,
-  },
-  {
-    path: '/setting',
-    label: '系统设置',
-    icon: <SettingOutlined />,
-  },
+  // {
+  //   path: '/content',
+  //   label: '内容管理',
+  //   icon: <FileOutlined />,
+  //   children: [
+  //     { path: '/content/article', label: '文章管理' },
+  //     { path: '/content/category', label: '分类管理' },
+  //   ],
+  // },
+  // {
+  //   path: '/report',
+  //   label: '报表中心',
+  //   icon: <BarChartOutlined />,
+  // },
+  // {
+  //   path: '/setting',
+  //   label: '系统设置',
+  //   icon: <SettingOutlined />,
+  // },
 ];
 
 const menuItems = routeConfig.map(item => ({
