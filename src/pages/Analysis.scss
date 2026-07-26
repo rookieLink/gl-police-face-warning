@@ -46,6 +46,7 @@
     margin-bottom: 20px;
 
     .stat-card {
+      height: 120px;
       border-radius: 12px;
       transition: all 0.3s ease;
       cursor: pointer;
@@ -67,6 +68,12 @@
 
       .ant-statistic-content-prefix {
         font-size: 22px;
+      }
+
+      &.stat-gender {
+        .ant-statistic-content {
+          font-size: 20px;
+        }
       }
 
       &.stat-total {

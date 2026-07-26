@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Spin, message, Radio, Statistic, Row, Col, Tag, Switch, Space } from 'antd';
+import { Card, Spin, message, Radio, Statistic, Row, Col, Tag } from 'antd';
 import {
   LineChartOutlined,
   RiseOutlined,
@@ -24,7 +24,6 @@ const groupByConfig = {
 export default function Analysis() {
   const [loading, setLoading] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupBy>('day');
-  const [deduplicate, setDeduplicate] = useState(false);
   const [data, setData] = useState<AnalysisDataItem[]>([]);
   const [stats, setStats] = useState({
     totalPersons: 0,
@@ -37,7 +36,7 @@ export default function Analysis() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetchAnalysisData({ groupBy, deduplicate });
+      const res = await fetchAnalysisData({ groupBy, deduplicate: false });
       setData(res.list || []);
       setStats({
         totalPersons: res.totalPersons || 0,
@@ -55,7 +54,7 @@ export default function Analysis() {
 
   useEffect(() => {
     fetchData();
-  }, [groupBy, deduplicate]);
+  }, [groupBy]);
 
   const chartData = data.map(item => ({
     date: item.date,
@@ -139,29 +138,18 @@ export default function Analysis() {
           <span>数据分析</span>
         </div>
         <div className="analysis-controls">
-          <Space size="middle">
-            <div className="control-item">
-              <span className="control-label">去重：</span>
-              <Switch
-                checked={deduplicate}
-                onChange={setDeduplicate}
-                checkedChildren="是"
-                unCheckedChildren="否"
-              />
-            </div>
-            <Radio.Group
-              value={groupBy}
-              onChange={(e) => setGroupBy(e.target.value)}
-              optionType="button"
-              buttonStyle="solid"
-            >
-              {Object.entries(groupByConfig).map(([key, config]) => (
-                <Radio.Button key={key} value={key} className="group-radio-btn">
-                  {config.icon} {config.label}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Space>
+          <Radio.Group
+            value={groupBy}
+            onChange={(e) => setGroupBy(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+          >
+            {Object.entries(groupByConfig).map(([key, config]) => (
+              <Radio.Button key={key} value={key} className="group-radio-btn">
+                {config.icon} {config.label}
+              </Radio.Button>
+            ))}
+          </Radio.Group>
         </div>
       </div>
 
@@ -211,7 +199,6 @@ export default function Analysis() {
       <Card className="analysis-chart-card" bordered={false}>
         <div className="chart-header">
           <span className="chart-title">{getTitle()}</span>
-          <Tag color="blue">{deduplicate ? '已去重' : '未去重'}</Tag>
         </div>
         <Spin spinning={loading}>
           <div className="analysis-chart">

@@ -149,38 +149,39 @@ function GeoMap({ lat, lng }: GeoMapProps) {
       map.addLayer(jydtLayer);
       map.addLayer(jyzjLayer);
 
-      new window.mapboxgl.Marker()
-        .setLngLat([lng, lat])
+      new window.mapboxgl.Marker({
+        color: 'red'
+      }).setLngLat([lng, lat])
         .addTo(map);
 
-      const view = new window.layergl.View({
-        map: window.layergl.map.getMapBoxGLMap(map),
-      });
+      // const view = new window.layergl.View({
+      //   map: window.layergl.map.getMapBoxGLMap(map),
+      // });
 
-      const pointLayer = new window.layergl.PointLayer({
-        blend: 'lighter',
-        size: 12,
-        color: 'rgba(255, 77, 79, 0.9)',
-        shape: 'circle',
-        repeat: false,
-        enablePicked: true,
-        autoSelect: true,
-        onClick: (e) => {
-          console.log('---------地图点击事件------------', e)
-        },
-        onMousemove: () => {},
-      });
+      // const pointLayer = new window.layergl.PointLayer({
+      //   blend: 'lighter',
+      //   size: 12,
+      //   color: 'rgba(255, 77, 79, 0.9)',
+      //   shape: 'circle',
+      //   repeat: false,
+      //   enablePicked: true,
+      //   autoSelect: true,
+      //   onClick: (e) => {
+      //     console.log('---------地图点击事件------------', e)
+      //   },
+      //   onMousemove: () => {},
+      // });
 
-      view.addLayer(pointLayer);
-      pointLayer.setData([{
-        geometry: {
-          type: 'Point',
-          coordinates: [lng, lat],
-        },
-        properties: {
-          id: 'warning-point',
-        },
-      }]);
+      // view.addLayer(pointLayer);
+      // pointLayer.setData([{
+      //   geometry: {
+      //     type: 'Point',
+      //     coordinates: [lng, lat],
+      //   },
+      //   properties: {
+      //     id: 'warning-point',
+      //   },
+      // }]);
     });
 
     mapInstanceRef.current = map;
@@ -285,10 +286,10 @@ export default function User() {
 
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-    { title: '身份证号', dataIndex: 'sfz', key: 'sfz', width: 180 },
-    { title: '预警时间', dataIndex: 'yjsj', key: 'yjsj', width: 160 },
-    { title: '预警点位', dataIndex: 'yjdw', key: 'yjdw', width: 150 },
-    { title: '预警点位代码', dataIndex: 'yjdwdm', key: 'yjdwdm', width: 120 },
+    { title: '身份证号', dataIndex: 'sfz', key: 'sfz', width: 120 },
+    { title: '预警时间', dataIndex: 'yjsj', key: 'yjsj', width: 120 },
+    { title: '预警点位', dataIndex: 'yjdw', key: 'yjdw', width: 120 },
+    // { title: '预警点位代码', dataIndex: 'yjdwdm', key: 'yjdwdm', width: 120 },
     {
       title: '小图',
       dataIndex: 'xt',
@@ -297,13 +298,13 @@ export default function User() {
       render: (url: string, obj: SearchResult) =>{ 
         return  url ? <Image src={url} width={50} height={50} style={{ objectFit: 'cover' }} preview={{ mask: '查看大图', src: obj.dt }} /> : '-' },
     },
-    { title: '经度', dataIndex: 'lng', key: 'lng', width: 100, render: (v: number) => v?.toFixed(6) },
-    { title: '纬度', dataIndex: 'lat', key: 'lat', width: 100, render: (v: number) => v?.toFixed(6) },
+    // { title: '经度', dataIndex: 'lng', key: 'lng', width: 100, render: (v: number) => v?.toFixed(6) },
+    // { title: '纬度', dataIndex: 'lat', key: 'lat', width: 100, render: (v: number) => v?.toFixed(6) },
     {
       title: '相似度',
       dataIndex: 'xsd',
       key: 'xsd',
-      width: 100,
+      width: 80,
       render: (v: number) => (
         <span style={{ color: v >= 90 ? '#52c41a' : v >= 80 ? '#1890ff' : '#ff4d4f', fontWeight: 'bold' }}>
           {v}%
@@ -313,7 +314,7 @@ export default function User() {
     {
       title: '操作',
       key: 'action',
-      width: 100,
+      width: 80,
       fixed: 'right' as const,
       render: (_: unknown, record: SearchResult) => (
         <Button type="link" size="small" onClick={() => handleViewDetail(record)}>
@@ -358,18 +359,14 @@ export default function User() {
         columns={columns}
         dataSource={dataSource}
         loading={loading}
-        scroll={{ x: 1200 }}
-        locale={{
-          emptyText: '暂无数据',
-          filterConfirm: '确定',
-          filterReset: '重置',
-          filterTitle: '筛选',
-          selectAll: '全选',
-          selectInvert: '反选',
-          sortTitle: '排序',
-          triggerDesc: '点击降序',
-          triggerAsc: '点击升序',
-          cancelSort: '取消排序',
+        scroll={{ x: 1200, y: 'calc(100vh - 400px)' }}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `共 ${total} 条记录`,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          defaultPageSize: 10,
         }}
         pagination={{
           ...pagination,

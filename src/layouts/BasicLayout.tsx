@@ -43,28 +43,28 @@ const routeConfig: RouteConfig[] = [
     ],
   },
   {
-    path: '/user',
-    label: '用户管理',
+    path: '/warn',
+    label: '预警人员',
     icon: <TeamOutlined />,
-    children: [
-      // { path: '/user/list', label: '用户列表' },
-      { path: '/user/role', label: '人员管理', icon: <SafetyCertificateOutlined /> },
-      // { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
-    ],
+    // children: [
+    //   // { path: '/user/list', label: '用户列表' },
+    //   { path: '/user/role', label: '人员管理', icon: <SafetyCertificateOutlined /> },
+    //   // { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
+    // ],
   },
+  // {
+  //   path: '/warning-map',
+  //   label: '预警地图',
+  //   icon: <EnvironmentOutlined />,
+  // },
   {
-    path: '/warning-map',
-    label: '预警地图',
+    path: '/heatmap',
+    label: '预警分布',
     icon: <EnvironmentOutlined />,
   },
   {
-    path: '/heatmap',
-    label: '热力图',
-    icon: <FireOutlined />,
-  },
-  {
     path: '/analysis',
-    label: '数据分析',
+    label: '趋势分析',
     icon: <BarChartOutlined />,
   },
   // {
@@ -102,9 +102,9 @@ const menuItems = routeConfig.map(item => ({
 const userInfo = {
   name: '管理员',
   role: '系统管理员',
-  department: '技术部',
+  department: '鼓楼一中队',
   email: 'admin@example.com',
-  phone: '138****8888',
+  phone: '18913879720',
 };
 
 function findRouteByPath(path: string): { parent: RouteConfig | null; current: RouteConfig | null } {
@@ -217,12 +217,13 @@ export default function BasicLayout() {
           top: 0,
           left: 0,
           right: 0,
+          height: 64,
           zIndex: 100,
         }}
       >
         <Space>
           <span style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
-            鼓楼分局巡防条线
+            鼓楼分局巡防条线预警系统
           </span>
         </Space>
         <Dropdown
@@ -268,10 +269,10 @@ export default function BasicLayout() {
           />
         </Sider>
         <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: 'margin-left 0.2s' }}>
-          <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0' }}>
+          <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: 64, zIndex: 50 }}>
             <Breadcrumb items={breadcrumbItems} />
           </div>
-          <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8, minHeight: 280 }}>
+          <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8, minHeight: 'calc(100vh - 136px)' }}>
             <Outlet />
           </Content>
         </Layout>

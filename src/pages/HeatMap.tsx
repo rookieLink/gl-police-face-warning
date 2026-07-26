@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Card, Spin, message, Radio, Tag, Switch, Space, Tabs } from 'antd';
+import { Card, Spin, message, Tag, Tabs } from 'antd';
 import {
   FireOutlined,
-  ClockCircleOutlined,
-  UserOutlined,
   DotChartOutlined,
   HeatMapOutlined,
 } from '@ant-design/icons';
@@ -11,14 +9,7 @@ import { fetchHeatMapData } from '../services/user';
 import type { SearchResult } from '../services/user';
 import './HeatMap.scss';
 
-type TimeRange = 'day' | '7days' | 'month';
 type MapMode = 'heatmap' | 'dot';
-
-const timeRangeConfig = {
-  day: { label: '今日', icon: <ClockCircleOutlined /> },
-  '7days': { label: '近7日', icon: <FireOutlined /> },
-  month: { label: '近一个月', icon: <UserOutlined /> },
-};
 
 const mapModeConfig = {
   heatmap: { label: '热力图', icon: <HeatMapOutlined /> },
@@ -30,14 +21,12 @@ export default function HeatMap() {
   const mapInstanceRef = useRef<unknown>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<SearchResult[]>([]);
-  const [timeRange, setTimeRange] = useState<TimeRange>('7days');
-  const [deduplicate, setDeduplicate] = useState(false);
   const [mapMode, setMapMode] = useState<MapMode>('heatmap');
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetchHeatMapData({ timeRange, deduplicate });
+      const res = await fetchHeatMapData({ timeRange: 'day', deduplicate: false });
       setData(res.list || []);
     } catch {
       message.error('获取数据失败');
@@ -48,7 +37,7 @@ export default function HeatMap() {
 
   useEffect(() => {
     fetchData();
-  }, [timeRange, deduplicate]);
+  }, []);
 
   const initMap = useCallback(() => {
     if (!mapRef.current || !window.GeoGlobe || !window.mapboxgl || !window.layergl) return;
@@ -114,22 +103,63 @@ export default function HeatMap() {
           },
         });
       } else {
+        // 按坐标分组，同一坐标只渲染一次
+        const groupedData = new Map<string, SearchResult[]>();
         validData.forEach(item => {
-          new window.mapboxgl.Marker()
-            .setLngLat([item.lng, item.lat])
+          const key = `${item.lng.toFixed(4)},${item.lat.toFixed(4)}`;
+          if (!groupedData.has(key)) {
+            groupedData.set(key, []);
+          }
+          groupedData.get(key)!.push(item);
+        });
+
+        groupedData.forEach((items, key) => {
+          const [lng, lat] = key.split(',').map(Number);
+
+          const count = items.length;
+          const sfzList = items.map(i => i.sfz).join('、');
+          const yjdw = items[0].yjdw;
+
+          const popupContent = `
+            <div style="padding: 10px; min-width: 200px;">
+              <div style="font-weight: bold; margin-bottom: 8px; font-size: 14px;">${yjdw}</div>
+              <div style="margin-bottom: 4px;"><strong>拍到人数：</strong><span style="color: #1890ff; font-weight: bold; font-size: 16px;">${count}</span> 人</div>
+              <div style="margin-bottom: 4px;"><strong>身份证号：</strong></div>
+              <div style="max-height: 100px; overflow-y: auto; font-size: 12px; color: #666;">${sfzList}</div>
+            </div>
+          `;
+
+          const popup = new (window.mapboxgl as unknown as { Popup: new (options: { offset: number }) => { setHTML: (html: string) => unknown } }).Popup({ offset: 25 })
+            .setHTML(popupContent);
+
+          new (window.mapboxgl as unknown as {
+            Marker: new () => {
+              setLngLat: (lnglat: number[]) => {
+                setPopup: (popup: unknown) => {
+                  addTo: (map: unknown) => void;
+                };
+              };
+            };
+          }).Marker({
+            color: 'red'
+          }).setLngLat([lng, lat])
+            .setPopup(popup)
             .addTo(map);
         });
 
-        const pointData = validData.map(item => ({
-          geometry: {
-            type: 'Point',
-            coordinates: [item.lng, item.lat],
-          },
-          properties: {
-            id: item.id,
-            sfz: item.sfz,
-          },
-        }));
+        // 使用 layergl 渲染点
+        const pointData = Array.from(groupedData.entries()).map(([key, items]) => {
+          const [lng, lat] = key.split(',').map(Number);
+          return {
+            geometry: {
+              type: 'Point',
+              coordinates: [lng, lat],
+            },
+            properties: {
+              count: items.length,
+            },
+          };
+        });
 
         const view = new window.layergl.View({
           map: window.layergl.map.getMapBoxGLMap(map),
@@ -143,9 +173,7 @@ export default function HeatMap() {
           repeat: false,
           enablePicked: true,
           autoSelect: true,
-          onClick: (evt) => {
-            console.log('点位点击:', evt);
-          },
+          onClick: () => {},
           onMousemove: () => {},
         });
 
@@ -173,32 +201,7 @@ export default function HeatMap() {
       <div className="heatmap-header">
         <div className="heatmap-title">
           <FireOutlined className="title-icon" />
-          <span>预警热力图</span>
-        </div>
-        <div className="heatmap-controls">
-          <Space size="middle">
-            <div className="control-item">
-              <span className="control-label">去重：</span>
-              <Switch
-                checked={deduplicate}
-                onChange={setDeduplicate}
-                checkedChildren="是"
-                unCheckedChildren="否"
-              />
-            </div>
-            <Radio.Group
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              optionType="button"
-              buttonStyle="solid"
-            >
-              {Object.entries(timeRangeConfig).map(([key, config]) => (
-                <Radio.Button key={key} value={key} className="time-radio-btn">
-                  {config.icon} {config.label}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Space>
+          <span>当日预警分布分析</span>
         </div>
       </div>
 
@@ -236,7 +239,7 @@ export default function HeatMap() {
 
       <div className="heatmap-footer">
         <Tag color="blue">数据来源：鼓楼分局巡防系统</Tag>
-        <Tag color="green">{deduplicate ? '已去重' : '未去重'} | {timeRangeConfig[timeRange].label} | {mapModeConfig[mapMode].label}</Tag>
+        <Tag color="green">今日数据 | {mapModeConfig[mapMode].label}</Tag>
       </div>
     </div>
   );

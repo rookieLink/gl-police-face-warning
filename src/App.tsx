@@ -20,7 +20,7 @@ function App() {
         <Route path="/dashboard/analysis" element={<Home />} />
         <Route path="/user" element={<Navigate to="/user/list" replace />} />
         <Route path="/user/list" element={<User />} />
-        <Route path="/user/role" element={<User />} />
+        <Route path="/warn" element={<User />} />
         <Route path="/user/permission" element={<User />} />
         <Route path="/warning-map" element={<WarningMap />} />
         <Route path="/heatmap" element={<HeatMap />} />
@@ -30,6 +30,8 @@ function App() {
         <Route path="/content/category" element={<Home />} />
         <Route path="/report" element={<Home />} />
         <Route path="/setting" element={<Setting />} />
+        <Route path="*" element={<Navigate to="/warn" replace/>} />
+
       </Route>
     </Routes>
   )

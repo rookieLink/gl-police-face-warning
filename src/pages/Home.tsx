@@ -4,7 +4,7 @@ import { UserOutlined, FileOutlined, CheckCircleOutlined } from '@ant-design/ico
 export default function Home() {
   return (
     <>
-      <h2>首页</h2>
+      <h2>首页（示例页面）</h2>
       <Row gutter={16}>
         <Col span={8}>
           <Card>
