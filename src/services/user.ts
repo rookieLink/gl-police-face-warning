@@ -2,7 +2,8 @@ import axios from 'axios';
 import { message } from 'antd';
 
 const api = axios.create({
-  baseURL: 'http://50.32.42.5:9003',
+  baseURL: 'http://localhost:5001',
+  // baseURL: 'http://50.32.42.5:9003',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -61,7 +62,7 @@ export interface ListParams {
 
 /** 查询所有数据 */
 export const fetchAllUsers = async (params: ListParams = {}): Promise<ApiResponse> => {
-  const res = await api.post<ApiResponse>('/api/gulou-face/list', params);
+  const res = await api.post<ApiResponse>('/api/gulou-face', params);
   return res as unknown as ApiResponse;
 };
 

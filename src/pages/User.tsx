@@ -15,6 +15,53 @@ import type { SearchParams, SearchResult } from '../services/user';
 declare global {
   interface Window {
     BMap: typeof BMap;
+    GeoGlobe: {
+      Map: new (options: {
+        container: string;
+        mapCRS: string;
+        zoom: number;
+        center: number[];
+        maxZoom: number;
+        minZoom: number;
+        showLogo: boolean;
+      }) => {
+        on: (event: string, callback: () => void) => void;
+        addLayer: (layer: unknown) => void;
+      };
+      Format: {
+        WMTS: new () => {
+          createLayer: (url: string) => unknown;
+        };
+      };
+    };
+    mapboxgl: {
+      Marker: new () => {
+        setLngLat: (lnglat: number[]) => {
+          addTo: (map: unknown) => void;
+        };
+      };
+    };
+    layergl: {
+      View: new (options: { map: unknown }) => {
+        addLayer: (layer: unknown) => void;
+      };
+      PointLayer: new (options: {
+        blend: string;
+        size: number;
+        color: string;
+        shape: string;
+        repeat: boolean;
+        enablePicked: boolean;
+        autoSelect: boolean;
+        onClick: (evt: unknown) => void;
+        onMousemove: (evt: unknown) => void;
+      }) => {
+        setData: (data: unknown[]) => void;
+      };
+      map: {
+        getMapBoxGLMap: (map: unknown) => unknown;
+      };
+    };
   }
 }
 
@@ -69,6 +116,86 @@ function BaiduMap({ lat, lng }: BaiduMapProps) {
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
 }
+interface GeoMapProps {
+  lat: number;
+  lng: number;
+}
+
+function GeoMap({ lat, lng }: GeoMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || !window.GeoGlobe || !window.mapboxgl || !window.layergl) return;
+
+    const mapId = `geomap-${Date.now()}`;
+    mapRef.current.id = mapId;
+
+    const map = new window.GeoGlobe.Map({
+      container: mapId,
+      mapCRS: '4490',
+      zoom: 15,
+      center: [lng, lat],
+      maxZoom: 20,
+      minZoom: 8,
+      showLogo: false,
+    });
+
+    map.on('load', () => {
+      const wmts = new window.GeoGlobe.Format.WMTS();
+      const jydtLayer = wmts.createLayer('http://pgis-dt.nkg.js:83/geostar/NJ_GA_DT/wmts');
+      const jyzjLayer = wmts.createLayer('http://pgis-dt.nkg.js:83/geostar/NJ_GA_ZJ/wmts');
+
+      map.addLayer(jydtLayer);
+      map.addLayer(jyzjLayer);
+
+      new window.mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .addTo(map);
+
+      const view = new window.layergl.View({
+        map: window.layergl.map.getMapBoxGLMap(map),
+      });
+
+      const pointLayer = new window.layergl.PointLayer({
+        blend: 'lighter',
+        size: 12,
+        color: 'rgba(255, 77, 79, 0.9)',
+        shape: 'circle',
+        repeat: false,
+        enablePicked: true,
+        autoSelect: true,
+        onClick: (e) => {
+          console.log('---------地图点击事件------------', e)
+        },
+        onMousemove: () => {},
+      });
+
+      view.addLayer(pointLayer);
+      pointLayer.setData([{
+        geometry: {
+          type: 'Point',
+          coordinates: [lng, lat],
+        },
+        properties: {
+          id: 'warning-point',
+        },
+      }]);
+    });
+
+    mapInstanceRef.current = map;
+
+    return () => {
+      if (mapInstanceRef.current) {
+        (mapInstanceRef.current as { remove?: () => void }).remove?.();
+      }
+    };
+  }, [lat, lng]);
+
+  return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
+}
+
+export { GeoMap };
 
 export default function User() {
   const [form] = Form.useForm();
@@ -84,6 +211,8 @@ export default function User() {
     setLoading(true);
     try {
       const data = await searchUsers(params);
+    console.log(data.list.map((item) => ({ ...item, key: item.id })))
+
       setDataSource(data.list.map((item) => ({ ...item, key: item.id })));
       setPagination(prev => ({ ...prev, total: data.total }));
     } catch {
@@ -165,7 +294,8 @@ export default function User() {
       dataIndex: 'xt',
       key: 'xt',
       width: 80,
-      render: (url: string) => url ? <Image src={url} width={50} height={50} style={{ objectFit: 'cover' }} preview={{ mask: '查看大图' }} /> : '-',
+      render: (url: string, obj: SearchResult) =>{ 
+        return  url ? <Image src={url} width={50} height={50} style={{ objectFit: 'cover' }} preview={{ mask: '查看大图', src: obj.dt }} /> : '-' },
     },
     { title: '经度', dataIndex: 'lng', key: 'lng', width: 100, render: (v: number) => v?.toFixed(6) },
     { title: '纬度', dataIndex: 'lat', key: 'lat', width: 100, render: (v: number) => v?.toFixed(6) },
@@ -324,6 +454,10 @@ export default function User() {
             >
               <div style={{ width: '100%', height: 300, borderRadius: 8, overflow: 'hidden' }}>
                 <BaiduMap
+                  lat={currentUser.lat}
+                  lng={currentUser.lng}
+                />
+                <GeoMap
                   lat={currentUser.lat}
                   lng={currentUser.lng}
                 />

@@ -14,6 +14,7 @@ import {
   SafetyCertificateOutlined,
   // LockOutlined,
   EnvironmentOutlined,
+  FireOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -55,6 +56,11 @@ const routeConfig: RouteConfig[] = [
     path: '/warning-map',
     label: '预警地图',
     icon: <EnvironmentOutlined />,
+  },
+  {
+    path: '/heatmap',
+    label: '热力图',
+    icon: <FireOutlined />,
   },
   // {
   //   path: '/content',

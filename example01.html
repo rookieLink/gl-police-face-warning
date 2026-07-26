@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="referrer" content="always"><meta charset="UTF-8">
+    <title>��ͼ��</title>
+    <link rel="stylesheet" href="http://pgis-dt.nkg.js:9010/api/resource/css/demoCenter.css">
+    <link rel="stylesheet" href="http://pgis-dt.nkg.js:9010/api/mapApis/mapbox/css/mapbox-gl.css">
+    <script src="http://pgis-dt.nkg.js:9010/api/mapApis/mapbox/js/mapbox-gl.js"></script>
+    <script
+        src="http://pgis-dt.nkg.js:9010/api/auth/GeoGlobe/GeoGlobeJS.min.js?tk=�����Ȩ"></script>
+    <script src="http://pgis-dt.nkg.js:9010/api/mapApis/GeoGlobeAPI/plugins/layergl/layergl.min.js"></script>
+    <!-- <script src="https://polyfill.alicdn.com/polyfill.min.js"></script> -->
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script>
+        
+        // �����ͼ����ʵ��,�����ӵ�idΪmap��div������
+        var map = new GeoGlobe.Map({
+            container: 'map', //������
+            mapCRS: '4490', //��������ϵ
+            zoom: 13, //��ǰ���ż���
+            center: [118.726, 32.006], //��λ���ĵ�
+            maxZoom: 20, //������ż���
+            minZoom: 8, //��С���ż���
+			showLogo:false,
+        });
+
+        var points = [
+            ['118.7399092263396', '32.06796638471963'],
+
+        ];
+        var marker = new mapboxgl.Marker()
+            .setLngLat(['118.7399092263396', '32.06796638471963'])
+            .addTo(map);
+
+        var data = [];
+        for (let i = 0; i < points.length; i++) {
+            data.push({
+                geometry: {
+                    type: 'Point',
+                    coordinates: points[i],
+                },
+                properties: {
+                    id: 'i',
+                },
+            });
+        }
+
+        map.on('load', function () {
+            // ����WMTSͼ��
+            var wmts = new GeoGlobe.Format.WMTS();
+            var jydt_layer = wmts.createLayer("http://pgis-dt.nkg.js:83/geostar/NJ_GA_DT/wmts");
+            var jyzj_layer = wmts.createLayer("http://pgis-dt.nkg.js:83/geostar/NJ_GA_ZJ/wmts");
+
+            map.addLayer(jydt_layer)
+            map.addLayer(jyzj_layer)
+
+
+            var view = new layergl.View({
+                map: layergl.map.getMapBoxGLMap(map), // ͬ���õĵ�ͼ����
+            });
+
+            var pointLayer = new layergl.PointLayer({
+                blend: 'lighter', // �����ģʽ����ѡnormal��Ĭ��ֵ����lighter
+                size: 10, // ���С
+                color: 'rgba(246,0,255,0.9)', // ��ɫ
+                shape: 'circle', // չʾ�����״, ��ѡֵ��circle��Ĭ��ֵ����square
+                repeat: false, // �Ƿ������ظ������꣬Ϊ��ʵ��С�����������ĵ�ͼЧ��
+                enablePicked: true, // �Ƿ���ʰȡ
+                autoSelect: true, // �Ƿ����Զ�ʰȡ
+                onClick: function (evt) {
+                    // ����¼��ص���������Ҫ���� enablePicked
+                    console.log(evt);
+                },
+                onMousemove: function (evt) {
+                    // ����ƶ��¼��ص���������Ҫ���� enablePicked
+                    console.log(evt);
+                }
+            });
+            // view.addLayer(pointLayer);
+            // pointLayer.setData(data);
+        })
+
+    </script>
+</body>
+
+</html>
