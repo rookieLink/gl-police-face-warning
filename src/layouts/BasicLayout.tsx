@@ -10,7 +10,7 @@ import {
   DashboardOutlined,
   TeamOutlined,
   // FileOutlined,
-  // BarChartOutlined,
+  BarChartOutlined,
   SafetyCertificateOutlined,
   // LockOutlined,
   EnvironmentOutlined,
@@ -61,6 +61,11 @@ const routeConfig: RouteConfig[] = [
     path: '/heatmap',
     label: '热力图',
     icon: <FireOutlined />,
+  },
+  {
+    path: '/analysis',
+    label: '数据分析',
+    icon: <BarChartOutlined />,
   },
   // {
   //   path: '/content',

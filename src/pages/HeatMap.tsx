@@ -1,163 +1,165 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Card, Spin, message, Radio, Statistic, Row, Col, Tag } from 'antd';
+import { Card, Spin, message, Radio, Tag, Switch, Space, Tabs } from 'antd';
 import {
   FireOutlined,
-  RiseOutlined,
-  EnvironmentOutlined,
-  AlertOutlined,
   ClockCircleOutlined,
+  UserOutlined,
+  DotChartOutlined,
+  HeatMapOutlined,
 } from '@ant-design/icons';
-import { fetchAllUsers } from '../services/user';
+import { fetchHeatMapData } from '../services/user';
 import type { SearchResult } from '../services/user';
 import './HeatMap.scss';
 
-declare global {
-  interface Window {
-    BMap: typeof BMap;
-    BMapLib: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      HeatmapOverlay: new (options: { radius: number; opacity: number }) => any;
-    };
-  }
-}
-
-type TimeRange = 'day' | 'week' | 'month';
+type TimeRange = 'day' | '7days' | 'month';
+type MapMode = 'heatmap' | 'dot';
 
 const timeRangeConfig = {
   day: { label: '今日', icon: <ClockCircleOutlined /> },
-  week: { label: '本周', icon: <RiseOutlined /> },
-  month: { label: '本月', icon: <FireOutlined /> },
+  '7days': { label: '近7日', icon: <FireOutlined /> },
+  month: { label: '近一个月', icon: <UserOutlined /> },
 };
 
-const formatTime = (yjsj: string): Date => {
-  if (!yjsj) return new Date();
-  return new Date(yjsj.replace(/-/g, '/'));
-};
-
-const filterByTimeRange = (data: SearchResult[], range: TimeRange): SearchResult[] => {
-  const now = new Date();
-  const start = new Date();
-
-  switch (range) {
-    case 'day':
-      start.setHours(0, 0, 0, 0);
-      break;
-    case 'week':
-      start.setDate(now.getDate() - now.getDay());
-      start.setHours(0, 0, 0, 0);
-      break;
-    case 'month':
-      start.setDate(1);
-      start.setHours(0, 0, 0, 0);
-      break;
-  }
-
-  return data.filter(item => {
-    const itemDate = formatTime(item.yjsj);
-    return itemDate >= start && itemDate <= now;
-  });
+const mapModeConfig = {
+  heatmap: { label: '热力图', icon: <HeatMapOutlined /> },
+  dot: { label: '点阵图', icon: <DotChartOutlined /> },
 };
 
 export default function HeatMap() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<unknown>(null);
-  const heatmapOverlayRef = useRef<unknown>(null);
   const [loading, setLoading] = useState(false);
-  const [allData, setAllData] = useState<SearchResult[]>([]);
-  const [filteredData, setFilteredData] = useState<SearchResult[]>([]);
-  const [timeRange, setTimeRange] = useState<TimeRange>('day');
+  const [data, setData] = useState<SearchResult[]>([]);
+  const [timeRange, setTimeRange] = useState<TimeRange>('7days');
+  const [deduplicate, setDeduplicate] = useState(false);
+  const [mapMode, setMapMode] = useState<MapMode>('heatmap');
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchHeatMapData({ timeRange, deduplicate });
+      setData(res.list || []);
+    } catch {
+      message.error('获取数据失败');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const abortController = new AbortController();
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetchAllUsers({});
-        if (!abortController.signal.aborted) {
-          setAllData(res.list || []);
-        }
-      } catch {
-        if (!abortController.signal.aborted) {
-          message.error('获取数据失败');
-        }
-      } finally {
-        if (!abortController.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => abortController.abort();
-  }, []);
-
-  useEffect(() => {
-    const filtered = filterByTimeRange(allData, timeRange);
-    setFilteredData(filtered);
-  }, [allData, timeRange]);
+    fetchData();
+  }, [timeRange, deduplicate]);
 
   const initMap = useCallback(() => {
-    if (!mapRef.current || !window.BMap) return;
+    if (!mapRef.current || !window.GeoGlobe || !window.mapboxgl || !window.layergl) return;
 
-    const map = new window.BMap.Map(mapRef.current);
-    map.centerAndZoom(new window.BMap.Point(118.778, 32.058), 12);
-    map.enableScrollWheelZoom(true);
-    map.addControl(new window.BMap.NavigationControl());
-    map.addControl(new window.BMap.ScaleControl());
+    const mapId = `heatmap-${Date.now()}`;
+    mapRef.current.id = mapId;
 
-    const points = filteredData
-      .filter(item => item.lat && item.lng)
-      .map(item => ({
-        lng: item.lng,
-        lat: item.lat,
-        count: item.xsd,
-      }));
+    const geoGlobe = window.GeoGlobe as unknown as {
+      Map: new (options: Record<string, unknown>) => {
+        on: (event: string, callback: () => void) => void;
+        addLayer: (layer: unknown) => void;
+        addSource: (id: string, source: unknown) => void;
+      };
+      Format: {
+        WMTS: new () => {
+          createLayer: (url: string) => { source: { noFadingParent: boolean } };
+        };
+        GeoJSONUtil: new () => {
+          points: (coords: string[][]) => unknown;
+        };
+      };
+    };
 
-    try {
-      const heatmapOverlay = new window.BMapLib.HeatmapOverlay({
-        radius: 30,
-        opacity: 0.6,
-      });
-      map.addOverlay(heatmapOverlay);
-      heatmapOverlay.setDataSet({
-        max: 100,
-        data: points,
-      });
-      heatmapOverlayRef.current = heatmapOverlay;
-    } catch {
-      // Heatmap library not loaded, fallback to markers
-      filteredData.forEach(item => {
-        if (!item.lat || !item.lng) return;
+    const map = new geoGlobe.Map({
+      container: mapId,
+      mapCRS: '4490',
+      zoom: 13,
+      center: [118.778, 32.058],
+      maxZoom: 20,
+      minZoom: 8,
+      showLogo: false,
+    });
 
-        const point = new window.BMap.Point(item.lng, item.lat);
-        const marker = new window.BMap.Marker(point);
-        map.addOverlay(marker);
+    map.on('load', () => {
+      const wmts = new geoGlobe.Format.WMTS();
+      const jydtLayer = wmts.createLayer('http://pgis-dt.nkg.js:83/geostar/NJ_GA_DT/wmts');
+      const jyzjLayer = wmts.createLayer('http://pgis-dt.nkg.js:83/geostar/NJ_GA_ZJ/wmts');
 
-        const color = item.xsd >= 90 ? '#52c41a' : item.xsd >= 80 ? '#faad14' : '#ff4d4f';
-        const infoContent = `
-          <div style="padding: 10px; min-width: 180px;">
-            <div style="font-weight: bold; margin-bottom: 6px;">${item.sfz}</div>
-            <div><strong>时间：</strong>${item.yjsj}</div>
-            <div><strong>点位：</strong>${item.yjdw}</div>
-            <div><strong>相似度：</strong><span style="color: ${color}; font-weight: bold;">${item.xsd}%</span></div>
-          </div>
-        `;
-        const infoWindow = new window.BMap.InfoWindow(infoContent, { width: 220 });
-        marker.addEventListener('click', () => {
-          map.openInfoWindow(infoWindow, point);
+      jydtLayer.source.noFadingParent = true;
+      jyzjLayer.source.noFadingParent = true;
+
+      map.addLayer(jydtLayer);
+      map.addLayer(jyzjLayer);
+
+      const validData = data.filter(item => item.lat && item.lng);
+
+      if (validData.length === 0) return;
+
+      const coords = validData.map(item => [String(item.lng), String(item.lat)]);
+
+      if (mapMode === 'heatmap') {
+        const GeoJSONUtil = new geoGlobe.Format.GeoJSONUtil();
+        const pointGeoJSON = GeoJSONUtil.points(coords);
+
+        map.addSource('heat-source', pointGeoJSON);
+        map.addLayer({
+          id: 'heat-layer',
+          type: 'heatmap',
+          source: 'heat-source',
+          paint: {
+            'heatmap-weight': 1,
+            'heatmap-radius': 20,
+          },
         });
-      });
-    }
+      } else {
+        validData.forEach(item => {
+          new window.mapboxgl.Marker()
+            .setLngLat([item.lng, item.lat])
+            .addTo(map);
+        });
 
-    if (points.length > 0) {
-      const viewPort = map.getViewport(points.map(p => new window.BMap.Point(p.lng, p.lat)));
-      map.centerAndZoom(viewPort.center, viewPort.zoom);
-    }
+        const pointData = validData.map(item => ({
+          geometry: {
+            type: 'Point',
+            coordinates: [item.lng, item.lat],
+          },
+          properties: {
+            id: item.id,
+            sfz: item.sfz,
+          },
+        }));
+
+        const view = new window.layergl.View({
+          map: window.layergl.map.getMapBoxGLMap(map),
+        });
+
+        const pointLayer = new window.layergl.PointLayer({
+          blend: 'lighter',
+          size: 12,
+          color: 'rgba(255, 77, 79, 0.9)',
+          shape: 'circle',
+          repeat: false,
+          enablePicked: true,
+          autoSelect: true,
+          onClick: (evt) => {
+            console.log('点位点击:', evt);
+          },
+          onMousemove: () => {},
+        });
+
+        view.addLayer(pointLayer);
+        pointLayer.setData(pointData);
+      }
+    });
 
     mapInstanceRef.current = map;
 
     return () => {
-      map.clearOverlays();
+      // cleanup
     };
-  }, [filteredData]);
+  }, [data, mapMode]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -165,12 +167,6 @@ export default function HeatMap() {
     }, 100);
     return () => clearTimeout(timer);
   }, [initMap]);
-
-  const stats = {
-    total: filteredData.length,
-    highMatch: filteredData.filter(d => d.xsd >= 90).length,
-    locations: new Set(filteredData.map(d => d.yjdw)).size,
-  };
 
   return (
     <div className="heatmap-container">
@@ -180,58 +176,50 @@ export default function HeatMap() {
           <span>预警热力图</span>
         </div>
         <div className="heatmap-controls">
-          <Radio.Group
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            optionType="button"
-            buttonStyle="solid"
-          >
-            {Object.entries(timeRangeConfig).map(([key, config]) => (
-              <Radio.Button key={key} value={key} className="time-radio-btn">
-                {config.icon} {config.label}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
+          <Space size="middle">
+            <div className="control-item">
+              <span className="control-label">去重：</span>
+              <Switch
+                checked={deduplicate}
+                onChange={setDeduplicate}
+                checkedChildren="是"
+                unCheckedChildren="否"
+              />
+            </div>
+            <Radio.Group
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              optionType="button"
+              buttonStyle="solid"
+            >
+              {Object.entries(timeRangeConfig).map(([key, config]) => (
+                <Radio.Button key={key} value={key} className="time-radio-btn">
+                  {config.icon} {config.label}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          </Space>
         </div>
       </div>
 
-      <Row gutter={16} className="heatmap-stats">
-        <Col span={8}>
-          <Card className="stat-card stat-total" bordered={false}>
-            <Statistic
-              title="预警总数"
-              value={stats.total}
-              prefix={<AlertOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card className="stat-card stat-high" bordered={false}>
-            <Statistic
-              title="高度匹配"
-              value={stats.highMatch}
-              prefix={<RiseOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card className="stat-card stat-location" bordered={false}>
-            <Statistic
-              title="预警点位"
-              value={stats.locations}
-              prefix={<EnvironmentOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
-        </Col>
-      </Row>
-
       <Card className="heatmap-map-card" bordered={false}>
+        <div className="map-mode-tabs">
+          <Tabs
+            activeKey={mapMode}
+            onChange={(key) => setMapMode(key as MapMode)}
+            items={Object.entries(mapModeConfig).map(([key, config]) => ({
+              key,
+              label: (
+                <span>
+                  {config.icon} {config.label}
+                </span>
+              ),
+            }))}
+          />
+        </div>
         <Spin spinning={loading}>
           <div ref={mapRef} className="heatmap-map" />
-          {filteredData.length === 0 && !loading && (
+          {data.length === 0 && !loading && (
             <div className="heatmap-empty">
               <FireOutlined className="empty-icon" />
               <p>当前时间段暂无预警数据</p>
@@ -248,7 +236,7 @@ export default function HeatMap() {
 
       <div className="heatmap-footer">
         <Tag color="blue">数据来源：鼓楼分局巡防系统</Tag>
-        <Tag color="green">实时更新</Tag>
+        <Tag color="green">{deduplicate ? '已去重' : '未去重'} | {timeRangeConfig[timeRange].label} | {mapModeConfig[mapMode].label}</Tag>
       </div>
     </div>
   );

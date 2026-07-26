@@ -6,6 +6,7 @@ import Setting from './pages/Setting'
 import Login from './pages/Login/Login'
 import WarningMap from './pages/WarningMap'
 import HeatMap from './pages/HeatMap'
+import Analysis from './pages/Analysis'
 import './App.scss'
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/user/permission" element={<User />} />
         <Route path="/warning-map" element={<WarningMap />} />
         <Route path="/heatmap" element={<HeatMap />} />
+        <Route path="/analysis" element={<Analysis />} />
         <Route path="/content" element={<Navigate to="/content/article" replace />} />
         <Route path="/content/article" element={<Home />} />
         <Route path="/content/category" element={<Home />} />

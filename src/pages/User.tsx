@@ -195,7 +195,7 @@ function GeoMap({ lat, lng }: GeoMapProps) {
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
 }
 
-export { GeoMap };
+export { BaiduMap, GeoMap };
 
 export default function User() {
   const [form] = Form.useForm();
@@ -453,10 +453,10 @@ export default function User() {
               size="small"
             >
               <div style={{ width: '100%', height: 300, borderRadius: 8, overflow: 'hidden' }}>
-                <BaiduMap
+                {/* <BaiduMap
                   lat={currentUser.lat}
                   lng={currentUser.lng}
-                />
+                /> */}
                 <GeoMap
                   lat={currentUser.lat}
                   lng={currentUser.lng}
