@@ -147,38 +147,38 @@ export default function HeatMap() {
             .addTo(map);
         });
 
-        // 使用 layergl 渲染点
-        const pointData = Array.from(groupedData.entries()).map(([key, items]) => {
-          const [lng, lat] = key.split(',').map(Number);
-          return {
-            geometry: {
-              type: 'Point',
-              coordinates: [lng, lat],
-            },
-            properties: {
-              count: items.length,
-            },
-          };
-        });
+        // // 使用 layergl 渲染点
+        // const pointData = Array.from(groupedData.entries()).map(([key, items]) => {
+        //   const [lng, lat] = key.split(',').map(Number);
+        //   return {
+        //     geometry: {
+        //       type: 'Point',
+        //       coordinates: [lng, lat],
+        //     },
+        //     properties: {
+        //       count: items.length,
+        //     },
+        //   };
+        // });
 
-        const view = new window.layergl.View({
-          map: window.layergl.map.getMapBoxGLMap(map),
-        });
+        // const view = new window.layergl.View({
+        //   map: window.layergl.map.getMapBoxGLMap(map),
+        // });
 
-        const pointLayer = new window.layergl.PointLayer({
-          blend: 'lighter',
-          size: 12,
-          color: 'rgba(255, 77, 79, 0.9)',
-          shape: 'circle',
-          repeat: false,
-          enablePicked: true,
-          autoSelect: true,
-          onClick: () => {},
-          onMousemove: () => {},
-        });
+        // const pointLayer = new window.layergl.PointLayer({
+        //   blend: 'lighter',
+        //   size: 12,
+        //   color: 'rgba(255, 77, 79, 0.9)',
+        //   shape: 'circle',
+        //   repeat: false,
+        //   enablePicked: true,
+        //   autoSelect: true,
+        //   onClick: () => {},
+        //   onMousemove: () => {},
+        // });
 
-        view.addLayer(pointLayer);
-        pointLayer.setData(pointData);
+        // view.addLayer(pointLayer);
+        // pointLayer.setData(pointData);
       }
     });
 

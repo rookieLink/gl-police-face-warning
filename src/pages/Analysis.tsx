@@ -84,37 +84,11 @@ export default function Analysis() {
       },
     },
     yAxis: {
-      title: false,
       label: {
         style: {
           fontSize: 12,
           fill: '#666',
         },
-      },
-    },
-    tooltip: {
-      showTitle: true,
-      showMarkers: true,
-      marker: {
-        stroke: '#1890ff',
-        lineWidth: 2,
-      },
-      domStyles: {
-        'g2-tooltip': {
-          borderRadius: '8px',
-          padding: '10px 14px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        },
-      },
-      formatter: (datum: { date: string; count: number }) => ({
-        name: datum.date,
-        value: `${datum.count} 人`,
-      }),
-    },
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 800,
       },
     },
   };

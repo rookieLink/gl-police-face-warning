@@ -326,9 +326,7 @@ export default function User() {
 
   return (
     <>
-      <h2>预警查询</h2>
-
-      <Card style={{ marginBottom: 16 }}>
+      <Card>
         <Form form={form} layout="horizontal" onFinish={handleSearch}>
           <Row gutter={16}>
             <Col span={8}>

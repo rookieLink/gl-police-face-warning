@@ -272,7 +272,7 @@ export default function BasicLayout() {
           <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: 64, zIndex: 50 }}>
             <Breadcrumb items={breadcrumbItems} />
           </div>
-          <Content style={{ margin: 24, padding: 24, background: '#fff', borderRadius: 8, minHeight: 'calc(100vh - 136px)' }}>
+          <Content style={{ margin: 12, padding: '12px 12px 40px 12px', background: '#fff', borderRadius: 8, minHeight: 'calc(100vh - 136px)' }}>
             <Outlet />
           </Content>
         </Layout>
