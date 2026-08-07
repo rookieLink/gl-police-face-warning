@@ -75,7 +75,7 @@ export default function Login() {
 
         <div className="login-header">
           <img src="/Police_Badge_of_China.svg" alt="公安警徽" className="logo-icon" />
-          <h1>鼓楼分局巡防条线</h1>
+          <h1>巡防预警</h1>
           <p>智能预警系统 v1.0</p>
         </div>
 

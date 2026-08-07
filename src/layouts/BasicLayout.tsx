@@ -9,7 +9,8 @@ import {
   InfoCircleOutlined,
   DashboardOutlined,
   TeamOutlined,
-  // FileOutlined,
+  FileOutlined,
+  UploadOutlined,
   BarChartOutlined,
   SafetyCertificateOutlined,
   // LockOutlined,
@@ -66,6 +67,11 @@ const routeConfig: RouteConfig[] = [
     path: '/analysis',
     label: '趋势分析',
     icon: <BarChartOutlined />,
+  },
+  {
+    path: '/file-upload',
+    label: '文件上传',
+    icon: <UploadOutlined />,
   },
   // {
   //   path: '/content',
@@ -223,7 +229,7 @@ export default function BasicLayout() {
       >
         <Space>
           <span style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
-            鼓楼分局巡防条线预警系统
+            巡防预警
           </span>
         </Space>
         <Dropdown

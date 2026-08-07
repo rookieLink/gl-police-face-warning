@@ -191,7 +191,7 @@ export default function Analysis() {
       </Card>
 
       <div className="analysis-footer">
-        <Tag color="blue">数据来源：鼓楼分局巡防系统</Tag>
+        <Tag color="blue">数据来源：鼓楼分局巡防预警系统</Tag>
         <Tag color="green">实时更新</Tag>
       </div>
     </div>

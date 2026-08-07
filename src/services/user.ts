@@ -7,8 +7,8 @@ import { message } from 'antd';
  * timeout: 10000ms
  */
 const api = axios.create({
-  // baseURL: 'http://localhost:5001',
-  baseURL: 'http://50.32.42.5:9003',
+  baseURL: 'http://localhost:5001',
+  // baseURL: 'http://50.32.42.5:9003',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

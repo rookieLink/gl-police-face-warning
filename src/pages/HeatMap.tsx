@@ -238,7 +238,7 @@ export default function HeatMap() {
       </Card>
 
       <div className="heatmap-footer">
-        <Tag color="blue">数据来源：鼓楼分局巡防系统</Tag>
+        <Tag color="blue">数据来源：鼓楼分局巡防预警系统</Tag>
         <Tag color="green">今日数据 | {mapModeConfig[mapMode].label}</Tag>
       </div>
     </div>
