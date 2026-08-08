@@ -16,6 +16,7 @@ import {
   // LockOutlined,
   EnvironmentOutlined,
   FireOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -69,9 +70,13 @@ const routeConfig: RouteConfig[] = [
     icon: <BarChartOutlined />,
   },
   {
-    path: '/file-upload',
-    label: '文件上传',
-    icon: <UploadOutlined />,
+    path: '/data-analysis',
+    label: '数据分析',
+    icon: <DatabaseOutlined />,
+    children: [
+      { path: '/data-analysis/list', label: '文件列表' },
+      { path: '/data-analysis/upload', label: '文件上传' },
+    ],
   },
   // {
   //   path: '/content',

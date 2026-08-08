@@ -72,22 +72,24 @@ export default function Analysis() {
       lineWidth: 3,
     },
     point: false,
-    xAxis: {
-      title: false,
-      tickCount: groupBy === 'day' ? 6 : groupBy === 'week' ? 4 : 6,
-      label: {
-        autoRotate: false,
-        style: {
-          fontSize: 12,
-          fill: '#666',
-        },
+    scale: {
+      x: {
+        tickCount: groupBy === 'day' ? 6 : groupBy === 'week' ? 4 : 6,
       },
     },
-    yAxis: {
-      label: {
+    axis: {
+      x: {
+        title: false,
+        labelAutoRotate: false,
         style: {
-          fontSize: 12,
-          fill: '#666',
+          labelFontSize: 12,
+          labelFill: '#666',
+        },
+      },
+      y: {
+        style: {
+          labelFontSize: 12,
+          labelFill: '#666',
         },
       },
     },

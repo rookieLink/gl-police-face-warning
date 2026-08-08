@@ -7,7 +7,10 @@ import Login from './pages/Login/Login'
 import WarningMap from './pages/WarningMap'
 import HeatMap from './pages/HeatMap'
 import Analysis from './pages/Analysis'
+import DataAnalysis from './pages/DataAnalysis'
+import DataList from './pages/DataList'
 import FileUpload from './pages/FileUpload'
+import Visualization from './pages/Visualization'
 import './App.scss'
 
 function App() {
@@ -26,7 +29,11 @@ function App() {
         <Route path="/warning-map" element={<WarningMap />} />
         <Route path="/heatmap" element={<HeatMap />} />
         <Route path="/analysis" element={<Analysis />} />
-        <Route path="/file-upload" element={<FileUpload />} />
+        <Route path="/data-analysis" element={<Navigate to="/data-analysis/list" replace />} />
+        <Route path="/data-analysis/list" element={<DataAnalysis />} />
+        <Route path="/data-analysis/upload" element={<FileUpload />} />
+        <Route path="/data-analysis/data" element={<DataList />} />
+        <Route path="/data-analysis/visualization" element={<Visualization />} />
         <Route path="/content" element={<Navigate to="/content/article" replace />} />
         <Route path="/content/article" element={<Home />} />
         <Route path="/content/category" element={<Home />} />
