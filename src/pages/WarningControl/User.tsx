@@ -9,8 +9,8 @@ import {
   IdcardOutlined,
   CameraOutlined,
 } from '@ant-design/icons';
-import { searchUsers } from '../services/user';
-import type { SearchParams, SearchResult } from '../services/user';
+import { searchUsers } from '../../services/user';
+import type { SearchParams, SearchResult } from '../../services/user';
 
 declare global {
   interface Window {

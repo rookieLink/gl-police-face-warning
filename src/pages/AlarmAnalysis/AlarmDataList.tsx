@@ -1,46 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  Card,
-  Button,
-  message,
-  Tag,
-  Space,
-  Typography,
-  Table,
-  Modal,
-  Input,
-  Descriptions,
-  Popconfirm,
-  Spin,
-} from 'antd';
-import {
-  FileOutlined,
-  DeleteOutlined,
-  ReloadOutlined,
-  EditOutlined,
-  InfoCircleOutlined,
-  ArrowLeftOutlined,
-} from '@ant-design/icons';
+import { Card, Button, Tag, Space, Table } from 'antd';
+import { FileOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import {
-  getDataList,
-  deleteFile,
-  renameFile,
-  getFileInfo,
-  type DataItem,
-  type FileItem,
-} from '../../services/file';
-
-const { Text } = Typography;
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+import { getDataList, type DataItem } from '../../services/file';
 
 export default function AlarmDataList() {
   const [searchParams] = useSearchParams();
@@ -50,15 +13,6 @@ export default function AlarmDataList() {
   const [dataList, setDataList] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
-
-  const [renameVisible, setRenameVisible] = useState(false);
-  const [renameFilename, setRenameFilename] = useState('');
-  const [newFilename, setNewFilename] = useState('');
-  const [renameLoading, setRenameLoading] = useState(false);
-
-  const [detailVisible, setDetailVisible] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailData, setDetailData] = useState<FileItem | null>(null);
 
   const fetchDataList = useCallback(async (currentPage = 1, pageSize = 10) => {
     if (!filename) return;
@@ -77,59 +31,6 @@ export default function AlarmDataList() {
   useEffect(() => {
     fetchDataList();
   }, [fetchDataList]);
-
-  const handleDelete = async () => {
-    try {
-      await deleteFile(filename, 1);
-      message.success('删除成功');
-      navigate('/alarm-analysis/data');
-    } catch {
-      // 错误已在拦截器处理
-    }
-  };
-
-  const handleRename = async () => {
-    if (!newFilename.trim()) {
-      message.warning('请输入新文件名');
-      return;
-    }
-    if (newFilename === renameFilename) {
-      message.warning('新文件名与原文件名相同');
-      return;
-    }
-
-    setRenameLoading(true);
-    try {
-      await renameFile({ filename: renameFilename, new_name: newFilename.trim(), forUse: 1 });
-      message.success('重命名成功');
-      setRenameVisible(false);
-      navigate(`/alarm-analysis/data?filename=${encodeURIComponent(newFilename.trim())}`);
-    } catch {
-      // 错误已在拦截器处理
-    } finally {
-      setRenameLoading(false);
-    }
-  };
-
-  const handleDetail = async () => {
-    if (!filename) return;
-    setDetailVisible(true);
-    setDetailLoading(true);
-    try {
-      const res = await getFileInfo(filename, 1);
-      setDetailData(res);
-    } catch {
-      setDetailVisible(false);
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const openRenameModal = () => {
-    setRenameFilename(filename);
-    setNewFilename(filename);
-    setRenameVisible(true);
-  };
 
   const columns: TableProps<DataItem>['columns'] = [
     {
@@ -245,40 +146,6 @@ export default function AlarmDataList() {
             <span>数据列表</span>
           </Space>
         }
-        extra={
-          <Space>
-            <Button
-              icon={<EditOutlined />}
-              onClick={openRenameModal}
-            >
-              重命名
-            </Button>
-            <Button
-              icon={<InfoCircleOutlined />}
-              onClick={handleDetail}
-            >
-              文件详情
-            </Button>
-            <Popconfirm
-              title="确认删除"
-              description={`确定要删除文件 ${filename} 吗？`}
-              onConfirm={handleDelete}
-              okText="确认"
-              cancelText="取消"
-            >
-              <Button danger icon={<DeleteOutlined />}>
-                删除
-              </Button>
-            </Popconfirm>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={() => fetchDataList(pagination.current, pagination.pageSize)}
-              loading={loading}
-            >
-              刷新
-            </Button>
-          </Space>
-        }
       >
         <Table
           columns={columns}
@@ -297,60 +164,6 @@ export default function AlarmDataList() {
           }}
         />
       </Card>
-
-      {/* 重命名弹窗 */}
-      <Modal
-        title="重命名文件"
-        open={renameVisible}
-        onOk={handleRename}
-        onCancel={() => setRenameVisible(false)}
-        confirmLoading={renameLoading}
-        okText="确认"
-        cancelText="取消"
-      >
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div>
-            <Text type="secondary">原文件名：</Text>
-            <Text>{renameFilename}</Text>
-          </div>
-          <Input
-            addonBefore="新文件名"
-            value={newFilename}
-            onChange={(e) => setNewFilename(e.target.value)}
-            onPressEnter={handleRename}
-            placeholder="请输入新文件名"
-          />
-        </Space>
-      </Modal>
-
-      {/* 详情弹窗 */}
-      <Modal
-        title="文件详情"
-        open={detailVisible}
-        onCancel={() => setDetailVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setDetailVisible(false)}>
-            关闭
-          </Button>,
-        ]}
-      >
-        <Spin spinning={detailLoading}>
-          {detailData && (
-            <Descriptions column={1} bordered size="small">
-              <Descriptions.Item label="文件名">{detailData.filename}</Descriptions.Item>
-              <Descriptions.Item label="类型">{detailData.extension}</Descriptions.Item>
-              <Descriptions.Item label="大小">{formatFileSize(detailData.size)}</Descriptions.Item>
-              <Descriptions.Item label="上传时间">{detailData.upload_time}</Descriptions.Item>
-              <Descriptions.Item label="修改时间">{detailData.modified_time}</Descriptions.Item>
-              <Descriptions.Item label="下载链接">
-                <Button type="link" href={detailData.url} target="_blank">
-                  点击下载
-                </Button>
-              </Descriptions.Item>
-            </Descriptions>
-          )}
-        </Spin>
-      </Modal>
     </div>
   );
 }

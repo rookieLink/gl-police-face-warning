@@ -210,15 +210,6 @@ export default function AlarmData() {
           >
             重命名
           </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<InfoCircleOutlined />}
-            onClick={() => handleDetail(record.filename)}
-            style={{ padding: 0 }}
-          >
-            详情
-          </Button>
           <Popconfirm
             title="确认删除"
             description={`确定要删除文件 ${record.filename} 吗？`}

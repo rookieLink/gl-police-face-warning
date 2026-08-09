@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, Upload, message, Select, Space, Typography } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { uploadFile } from '../services/file';
+import { uploadFile } from '../../services/file';
 
 const { Dragger } = Upload;
 const { Text } = Typography;

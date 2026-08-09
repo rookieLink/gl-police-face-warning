@@ -3,13 +3,13 @@ import { Card, Row, Col, Spin, Button, Empty, Tag, Tabs, Radio, message } from '
 import { ArrowLeftOutlined, LineChartOutlined, EnvironmentOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Pie, Line } from '@ant-design/charts';
-import { getVisualizationData, getHeatMapData, type PieDataItem, type LineDataItem, type DataItem } from '../services/file';
+import { getVisualizationData, getHeatMapData, type PieDataItem, type LineDataItem, type DataItem } from '../../services/file';
 
 type ActiveTab = 'chart' | 'map';
 
 const tabConfig = {
   chart: { label: '图表分析', icon: <LineChartOutlined /> },
-  map: { label: '地图分析', icon: <GlobalOutlined /> },
+  map: { label: '警情分布', icon: <GlobalOutlined /> },
 };
 
 const timeRangeOptions = [

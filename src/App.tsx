@@ -1,16 +1,15 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import BasicLayout from './layouts/BasicLayout'
 import Home from './pages/Home'
-import User from './pages/User'
 import Setting from './pages/Setting'
 import Login from './pages/Login/Login'
-import WarningMap from './pages/WarningMap'
-import HeatMap from './pages/HeatMap'
-import Analysis from './pages/Analysis'
-import DataAnalysis from './pages/DataAnalysis'
-import DataList from './pages/DataList'
-import FileUpload from './pages/FileUpload'
-import Visualization from './pages/Visualization'
+import User from './pages/WarningControl/User'
+import HeatMap from './pages/WarningControl/HeatMap'
+import Analysis from './pages/WarningControl/Analysis'
+import DataAnalysis from './pages/FileManagement/DataAnalysis'
+import DataList from './pages/FileManagement/DataList'
+import FileUpload from './pages/FileManagement/FileUpload'
+import Visualization from './pages/FileManagement/Visualization'
 import DataPreview from './pages/FileManagement/DataPreview'
 import AlarmData from './pages/AlarmAnalysis/AlarmData'
 import AlarmDataList from './pages/AlarmAnalysis/AlarmDataList'
@@ -26,11 +25,7 @@ function App() {
         <Route path="/dashboard" element={<Navigate to="/dashboard/overview" replace />} />
         <Route path="/dashboard/overview" element={<Home />} />
         <Route path="/dashboard/analysis" element={<Home />} />
-        <Route path="/user" element={<Navigate to="/user/list" replace />} />
-        <Route path="/user/list" element={<User />} />
         <Route path="/warn" element={<User />} />
-        <Route path="/user/permission" element={<User />} />
-        <Route path="/warning-map" element={<WarningMap />} />
         <Route path="/heatmap" element={<HeatMap />} />
         <Route path="/analysis" element={<Analysis />} />
         <Route path="/file-management" element={<Navigate to="/file-management/list" replace />} />

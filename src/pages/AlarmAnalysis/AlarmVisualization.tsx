@@ -9,7 +9,7 @@ type ActiveTab = 'chart' | 'map';
 
 const tabConfig = {
   chart: { label: '图表分析', icon: <LineChartOutlined /> },
-  map: { label: '地图分析', icon: <GlobalOutlined /> },
+  map: { label: '警情分布', icon: <EnvironmentOutlined /> },
 };
 
 const timeRangeOptions = [
@@ -310,8 +310,8 @@ export default function AlarmVisualization() {
       <Card
         title={
           <span>
-            <EnvironmentOutlined style={{ marginRight: 8 }} />
-            警情热力分布
+            {/* <EnvironmentOutlined style={{ marginRight: 8 }} /> */}
+            警情热力图
           </span>
         }
         bordered={false}

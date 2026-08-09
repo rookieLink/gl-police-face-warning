@@ -30,7 +30,7 @@ import {
   renameFile,
   getFileInfo,
   type FileItem,
-} from '../services/file';
+} from '../../services/file';
 
 const { Text } = Typography;
 
@@ -181,15 +181,6 @@ export default function DataAnalysis() {
             style={{ padding: 0 }}
           >
             重命名
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            icon={<InfoCircleOutlined />}
-            onClick={() => handleDetail(record.filename)}
-            style={{ padding: 0 }}
-          >
-            详情
           </Button>
           <Popconfirm
             title="确认删除"

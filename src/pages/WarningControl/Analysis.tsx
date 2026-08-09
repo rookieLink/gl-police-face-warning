@@ -9,8 +9,8 @@ import {
   EnvironmentOutlined,
 } from '@ant-design/icons';
 import { Line } from '@ant-design/charts';
-import { fetchAnalysisData } from '../services/user';
-import type { AnalysisDataItem } from '../services/user';
+import { fetchAnalysisData } from '../../services/user';
+import type { AnalysisDataItem } from '../../services/user';
 import './Analysis.scss';
 
 type GroupBy = 'day' | 'week' | 'month';

@@ -5,8 +5,8 @@ import {
   DotChartOutlined,
   HeatMapOutlined,
 } from '@ant-design/icons';
-import { fetchHeatMapData } from '../services/user';
-import type { SearchResult } from '../services/user';
+import { fetchHeatMapData } from '../../services/user';
+import type { SearchResult } from '../../services/user';
 import './HeatMap.scss';
 
 type MapMode = 'heatmap' | 'dot';

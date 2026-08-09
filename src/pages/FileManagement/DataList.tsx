@@ -4,7 +4,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { getDataList, type DataItem } from '../services/file';
+import { getDataList, type DataItem } from '../../services/file';
 
 const { Text } = Typography;
 
