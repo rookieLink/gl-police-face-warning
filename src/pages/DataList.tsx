@@ -21,7 +21,7 @@ export default function DataList() {
     if (!filename) return;
     setLoading(true);
     try {
-      const res = await getDataList({ filename, currentPage, pageSize });
+      const res = await getDataList({ filename, currentPage, pageSize, forUse: 0 });
       setDataList(res.list);
       setPagination(prev => ({ ...prev, current: currentPage, pageSize, total: res.total }));
     } catch {
@@ -116,7 +116,7 @@ export default function DataList() {
       <Space style={{ marginBottom: 16 }}>
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate('/data-analysis/list')}
+          onClick={() => navigate('/file-management/list')}
         >
           返回
         </Button>

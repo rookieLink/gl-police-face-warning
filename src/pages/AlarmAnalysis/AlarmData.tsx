@@ -20,7 +20,9 @@ import {
   ReloadOutlined,
   EditOutlined,
   InfoCircleOutlined,
-  EyeOutlined,
+  BarChartOutlined,
+  SearchOutlined,
+  LineChartOutlined,
 } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +32,7 @@ import {
   renameFile,
   getFileInfo,
   type FileItem,
-} from '../services/file';
+} from '../../services/file';
 
 const { Text } = Typography;
 
@@ -42,7 +44,7 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-export default function DataAnalysis() {
+export default function AlarmData() {
   const navigate = useNavigate();
   const [fileList, setFileList] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ export default function DataAnalysis() {
   const fetchFileList = useCallback(async (page = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      const res = await getFileList({ page, pageSize });
+      const res = await getFileList({ page, pageSize, forUse: 1 });
       setFileList(res.list);
       setPagination(prev => ({ ...prev, current: page, pageSize, total: res.total }));
     } catch {
@@ -76,7 +78,7 @@ export default function DataAnalysis() {
 
   const handleDelete = async (filename: string) => {
     try {
-      await deleteFile(filename);
+      await deleteFile(filename, 1);
       message.success('删除成功');
       fetchFileList(pagination.current, pagination.pageSize);
     } catch {
@@ -96,7 +98,7 @@ export default function DataAnalysis() {
 
     setRenameLoading(true);
     try {
-      await renameFile({ filename: renameFilename, new_name: newFilename.trim() });
+      await renameFile({ filename: renameFilename, new_name: newFilename.trim(), forUse: 1 });
       message.success('重命名成功');
       setRenameVisible(false);
       fetchFileList(pagination.current, pagination.pageSize);
@@ -111,7 +113,7 @@ export default function DataAnalysis() {
     setDetailVisible(true);
     setDetailLoading(true);
     try {
-      const res = await getFileInfo(filename);
+      const res = await getFileInfo(filename, 1);
       setDetailData(res);
     } catch {
       setDetailVisible(false);
@@ -126,8 +128,17 @@ export default function DataAnalysis() {
     setRenameVisible(true);
   };
 
-  const handlePreview = (filename: string) => {
-    navigate(`/file-management/preview?filename=${encodeURIComponent(filename)}`);
+  const handleMenuClick = (filename: string, key: string) => {
+    switch (key) {
+      case 'dataList':
+        navigate(`/alarm-analysis/detail?filename=${encodeURIComponent(filename)}`);
+        break;
+      case 'visualization':
+        navigate(`/alarm-analysis/visualization?filename=${encodeURIComponent(filename)}`);
+        break;
+      default:
+        break;
+    }
   };
 
   const columns: TableProps<FileItem>['columns'] = [
@@ -161,18 +172,35 @@ export default function DataAnalysis() {
     {
       title: '操作',
       key: 'action',
-      width: 240,
+      width: 260,
       render: (_, record) => (
         <Space size={[4, 4]} wrap>
-          <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handlePreview(record.filename)}
-            style={{ padding: 0 }}
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: 'dataList',
+                  icon: <SearchOutlined />,
+                  label: '列表查询',
+                },
+                {
+                  key: 'visualization',
+                  icon: <LineChartOutlined />,
+                  label: '可视化分析',
+                },
+              ],
+              onClick: ({ key }) => handleMenuClick(record.filename, key),
+            }}
           >
-            数据预览
-          </Button>
+            <Button
+              type="link"
+              size="small"
+              icon={<BarChartOutlined />}
+              style={{ padding: 0 }}
+            >
+              分析
+            </Button>
+          </Dropdown>
           <Button
             type="link"
             size="small"
@@ -209,7 +237,7 @@ export default function DataAnalysis() {
 
   return (
     <div>
-      <h2>数据分析</h2>
+      <h2>警情数据</h2>
 
       <Card
         title={

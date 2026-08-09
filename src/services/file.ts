@@ -31,9 +31,10 @@ export interface UploadResponse {
   size: number;
 }
 
-export const uploadFile = async (file: File): Promise<UploadResponse> => {
+export const uploadFile = async (file: File, forUse: number = 1): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('forUse', String(forUse));
 
   const res = await api.post<UploadResponse>('/api/file/upload-excel', formData, {
     headers: {
@@ -53,11 +54,13 @@ export interface FileItem {
   url: string;
   upload_time: string;
   modified_time: string;
+  forUse: number;
 }
 
 export interface FileListParams {
   page?: number;
   pageSize?: number;
+  forUse?: number;
 }
 
 export interface FileListResponse {
@@ -72,15 +75,15 @@ export const getFileList = async (params: FileListParams = {}): Promise<FileList
 
 // ==================== 文件详情 ====================
 
-export const getFileInfo = async (filename: string): Promise<FileItem> => {
-  const res = await api.post<FileItem>('/api/file/info', { filename });
+export const getFileInfo = async (filename: string, forUse: number = 0): Promise<FileItem> => {
+  const res = await api.post<FileItem>('/api/file/info', { filename, forUse });
   return res as unknown as FileItem;
 };
 
 // ==================== 文件删除 ====================
 
-export const deleteFile = async (filename: string): Promise<void> => {
-  await api.post('/api/file/delete', { filename });
+export const deleteFile = async (filename: string, forUse: number = 0): Promise<void> => {
+  await api.post('/api/file/delete', { filename, forUse });
 };
 
 // ==================== 文件重命名 ====================
@@ -88,6 +91,7 @@ export const deleteFile = async (filename: string): Promise<void> => {
 export interface RenameParams {
   filename: string;
   new_name: string;
+  forUse?: number;
 }
 
 export const renameFile = async (params: RenameParams): Promise<void> => {
@@ -103,8 +107,8 @@ export interface FileParseResponse {
   totalRows: number;
 }
 
-export const parseFile = async (filename: string): Promise<FileParseResponse> => {
-  const res = await api.post<FileParseResponse>('/api/file/parse', { filename });
+export const parseFile = async (filename: string, forUse: number = 0): Promise<FileParseResponse> => {
+  const res = await api.post<FileParseResponse>('/api/file/parse', { filename, forUse });
   return res as unknown as FileParseResponse;
 };
 
@@ -135,6 +139,7 @@ export interface DataListParams {
   filename: string;
   currentPage?: number;
   pageSize?: number;
+  forUse?: number;
 }
 
 export interface DataListResponse {
@@ -165,9 +170,27 @@ export interface VisualizationData {
   dayLineData: LineDataItem[];
 }
 
-export const getVisualizationData = async (filename: string): Promise<VisualizationData> => {
-  const res = await api.post<VisualizationData>('/api/file/json-analysis', { filename });
+export const getVisualizationData = async (filename: string, forUse: number = 0): Promise<VisualizationData> => {
+  const res = await api.post<VisualizationData>('/api/file/json-analysis', { filename, forUse });
   return res as unknown as VisualizationData;
+};
+
+// ==================== 热力图数据查询 ====================
+
+export interface HeatMapParams {
+  filename: string;
+  timeRange?: number; // 0:全部, 1:0-7点, 2:7-12点, 3:12-18点, 4:18-24点
+  forUse?: number;
+}
+
+export interface HeatMapResponse {
+  list: DataItem[];
+  total: number;
+}
+
+export const getHeatMapData = async (params: HeatMapParams): Promise<HeatMapResponse> => {
+  const res = await api.post<HeatMapResponse>('/api/file/json-heatmap', params);
+  return res as unknown as HeatMapResponse;
 };
 
 export default api;

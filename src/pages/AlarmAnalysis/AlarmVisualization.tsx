@@ -3,7 +3,7 @@ import { Card, Row, Col, Spin, Button, Empty, Tag, Tabs, Radio, message } from '
 import { ArrowLeftOutlined, LineChartOutlined, EnvironmentOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Pie, Line } from '@ant-design/charts';
-import { getVisualizationData, getHeatMapData, type PieDataItem, type LineDataItem, type DataItem } from '../services/file';
+import { getVisualizationData, getHeatMapData, type PieDataItem, type LineDataItem, type DataItem } from '../../services/file';
 
 type ActiveTab = 'chart' | 'map';
 
@@ -20,7 +20,7 @@ const timeRangeOptions = [
   { value: 4, label: '18-24点' },
 ];
 
-export default function Visualization() {
+export default function AlarmVisualization() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const filename = searchParams.get('filename') || '';
@@ -43,7 +43,7 @@ export default function Visualization() {
       if (!filename || activeTab !== 'chart') return;
       setLoading(true);
       try {
-        const res = await getVisualizationData(filename, 0);
+        const res = await getVisualizationData(filename, 1);
         setAreaPieData(res.areaPieData);
         setTimePieData(res.timePieData);
         setDayLineData(res.dayLineData);
@@ -62,7 +62,7 @@ export default function Visualization() {
       if (!filename || activeTab !== 'map') return;
       setLoading(true);
       try {
-        const res = await getHeatMapData({ filename, timeRange, forUse: 0 });
+        const res = await getHeatMapData({ filename, timeRange, forUse: 1 });
         setMapData(res.list || []);
       } catch {
         message.error('获取热力图数据失败');
@@ -78,7 +78,7 @@ export default function Visualization() {
     if (!mapRef.current || !window.GeoGlobe || !window.mapboxgl) return;
     if (mapData.length === 0) return;
 
-    const mapId = `visualization-heatmap-${Date.now()}`;
+    const mapId = `alarm-heatmap-${Date.now()}`;
     mapRef.current.id = mapId;
 
     const geoGlobe = window.GeoGlobe as unknown as {
@@ -255,12 +255,12 @@ export default function Visualization() {
         <Space style={{ marginBottom: 16 }}>
           <Button
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/file-management/list')}
+            onClick={() => navigate('/alarm-analysis/data')}
           >
             返回
           </Button>
         </Space>
-        <Empty description="请从文件列表选择文件进行分析" />
+        <Empty description="请从警情数据列表选择文件进行分析" />
       </div>
     );
   }
@@ -338,7 +338,7 @@ export default function Visualization() {
       </Card>
       {mapData.length > 0 && (
         <div style={{ marginTop: 16, textAlign: 'center' }}>
-          <Tag color="blue">数据来源：文件分析</Tag>
+          <Tag color="blue">数据来源：警情分析</Tag>
           <Tag color="green">共 {mapData.length} 条警情数据</Tag>
         </div>
       )}
@@ -350,11 +350,11 @@ export default function Visualization() {
       <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16 }}>
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate('/data-analysis/list')}
+          onClick={() => navigate('/alarm-analysis/data')}
         >
           返回
         </Button>
-        <h2 style={{ margin: 0 }}>可视化分析</h2>
+        <h2 style={{ margin: 0 }}>警情可视化分析</h2>
         {filename && <Tag color="blue">{filename}</Tag>}
       </div>
 

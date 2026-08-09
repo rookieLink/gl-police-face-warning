@@ -326,16 +326,16 @@ export default function User() {
 
   return (
     <>
-      <Card>
-        <Form form={form} layout="horizontal" onFinish={handleSearch}>
-          <Row gutter={16}>
+      <Card style={{ marginBottom: 16 }} styles={{ body: { padding: '12px 16px' } }}>
+        <Form form={form} layout="horizontal" onFinish={handleSearch} style={{ marginBottom: 0 }}>
+          <Row gutter={16} align="middle">
             <Col span={8}>
-              <Form.Item name="sfz" label="身份证号">
+              <Form.Item name="sfz" label="身份证号" style={{ marginBottom: 0 }}>
                 <Input placeholder="请输入身份证号" allowClear prefix={<IdcardOutlined />} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="yjdw" label="预警点位">
+              <Form.Item name="yjdw" label="预警点位" style={{ marginBottom: 0 }}>
                 <Input placeholder="请输入预警点位" allowClear prefix={<CameraOutlined />} />
               </Form.Item>
             </Col>
@@ -357,7 +357,7 @@ export default function User() {
         columns={columns}
         dataSource={dataSource}
         loading={loading}
-        scroll={{ x: 1200, y: 'calc(100vh - 400px)' }}
+        scroll={{ x: 1200, y: 'calc(100vh - 380px)' }}
         pagination={{
           ...pagination,
           showSizeChanger: true,
@@ -365,12 +365,6 @@ export default function User() {
           showTotal: (total) => `共 ${total} 条记录`,
           pageSizeOptions: ['10', '20', '50', '100'],
           defaultPageSize: 10,
-        }}
-        pagination={{
-          ...pagination,
-          showSizeChanger: false,
-          showQuickJumper: false,
-          showTotal: (total) => `共 ${total} 条记录`,
         }}
         onChange={handleTableChange}
       />

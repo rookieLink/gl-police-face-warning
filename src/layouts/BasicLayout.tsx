@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Layout, Menu, Dropdown, Avatar, Space, Modal, Descriptions, Button, Breadcrumb } from 'antd';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
+import './menu.css';
 import {
   HomeOutlined,
   UserOutlined,
@@ -17,6 +18,10 @@ import {
   EnvironmentOutlined,
   FireOutlined,
   DatabaseOutlined,
+  AlertOutlined,
+  WarningOutlined,
+  FileSearchOutlined,
+  AlertFilled,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -45,37 +50,32 @@ const routeConfig: RouteConfig[] = [
     ],
   },
   {
-    path: '/warn',
-    label: '预警人员',
-    icon: <TeamOutlined />,
-    // children: [
-    //   // { path: '/user/list', label: '用户列表' },
-    //   { path: '/user/role', label: '人员管理', icon: <SafetyCertificateOutlined /> },
-    //   // { path: '/user/permission', label: '权限管理', icon: <LockOutlined /> },
-    // ],
-  },
-  // {
-  //   path: '/warning-map',
-  //   label: '预警地图',
-  //   icon: <EnvironmentOutlined />,
-  // },
-  {
-    path: '/heatmap',
-    label: '预警分布',
-    icon: <EnvironmentOutlined />,
+    path: '/warning-control',
+    label: '盗窃预警管控',
+    icon: <WarningOutlined />,
+    children: [
+      { path: '/warn', label: '预警人员', icon: <TeamOutlined /> },
+      { path: '/heatmap', label: '预警分布', icon: <EnvironmentOutlined /> },
+      { path: '/analysis', label: '趋势分析', icon: <BarChartOutlined /> },
+    ],
   },
   {
-    path: '/analysis',
-    label: '趋势分析',
-    icon: <BarChartOutlined />,
+    path: '/alarm-analysis',
+    label: '警情分析',
+    icon: <AlertFilled />,
+    children: [
+      { path: '/alarm-analysis/data', label: '警情数据', icon: <FileSearchOutlined /> },
+      // { path: '/alarm-analysis/detail', label: '数据详情', icon: <InfoCircleOutlined /> },
+      // { path: '/alarm-analysis/visualization', label: '可视化分析', icon: <LineChartOutlined /> },
+    ],
   },
   {
-    path: '/data-analysis',
-    label: '数据分析',
+    path: '/file-management',
+    label: '文件管理',
     icon: <DatabaseOutlined />,
     children: [
-      { path: '/data-analysis/list', label: '文件列表' },
-      { path: '/data-analysis/upload', label: '文件上传' },
+      { path: '/file-management/list', label: '文件列表' },
+      { path: '/file-management/upload', label: '文件上传' },
     ],
   },
   // {
@@ -220,7 +220,7 @@ export default function BasicLayout() {
       <Header
         style={{
           padding: '0 24px',
-          background: '#001529',
+          background: 'rgb(9, 109, 217)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -243,7 +243,7 @@ export default function BasicLayout() {
           arrow
         >
           <Space style={{ cursor: 'pointer', color: '#fff', marginRight: '10px' }}>
-            <Avatar style={{ backgroundColor: '#1890ff' }} icon={<UserOutlined />} />
+            <Avatar style={{ backgroundColor: '#fff', color: 'rgb(24, 144, 255)' }} icon={<UserOutlined />} />
             <span>{userInfo.name}</span>
           </Space>
         </Dropdown>
@@ -253,7 +253,6 @@ export default function BasicLayout() {
           collapsible
           collapsed={collapsed}
           onCollapse={setCollapsed}
-          theme="dark"
           width={220}
           style={{
             position: 'fixed',
@@ -262,14 +261,18 @@ export default function BasicLayout() {
             bottom: 0,
             zIndex: 99,
             overflow: 'auto',
+            background: 'rgb(24, 144, 255)',
           }}
         >
           <Menu
-            theme="dark"
+            className="blue-menu"
             mode="inline"
             selectedKeys={selectedKeys}
             defaultOpenKeys={openKeys}
             items={menuItems}
+            style={{
+              background: 'transparent',
+            }}
             onClick={({ key, keyPath }) => {
               if (keyPath.length > 1) {
                 handleSubMenuClick({ key });
@@ -279,11 +282,25 @@ export default function BasicLayout() {
             }}
           />
         </Sider>
-        <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: 'margin-left 0.2s' }}>
+        <Layout
+          style={{
+            marginLeft: collapsed ? 80 : 220,
+            transition: 'margin-left 0.2s',
+            minHeight: 'calc(100vh - 64px)',
+          }}
+        >
           <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: 64, zIndex: 50 }}>
             <Breadcrumb items={breadcrumbItems} />
           </div>
-          <Content style={{ margin: 12, padding: '12px 12px 40px 12px', background: '#fff', borderRadius: 8, minHeight: 'calc(100vh - 136px)' }}>
+          <Content
+            style={{
+              margin: 12,
+              padding: '12px 12px 40px 12px',
+              background: '#fff',
+              borderRadius: 8,
+              overflow: 'auto',
+            }}
+          >
             <Outlet />
           </Content>
         </Layout>

@@ -1,0 +1,25 @@
+/* 蓝色主题菜单样式 */
+.blue-menu .ant-menu-item,
+.blue-menu .ant-menu-submenu-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.blue-menu .ant-menu-item:hover,
+.blue-menu .ant-menu-submenu-title:hover {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.blue-menu .ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: #fff !important;
+}
+
+.blue-menu .ant-menu-sub {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 折叠按钮样式 */
+.ant-layout-sider-trigger {
+  background: rgb(9, 109, 217) !important;
+}
