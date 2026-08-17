@@ -51,7 +51,7 @@ export default function FileUpload() {
 
   return (
     <div>
-      <h2>文件上传</h2>
+      <h2 style={{ marginBottom: 16 }}>文件上传</h2>
 
       <Card>
         <div style={{ marginBottom: 16 }}>

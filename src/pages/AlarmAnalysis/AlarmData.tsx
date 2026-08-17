@@ -59,12 +59,12 @@ export default function AlarmData() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailData, setDetailData] = useState<FileItem | null>(null);
 
-  const fetchFileList = useCallback(async (page = 1, pageSize = 10) => {
+  const fetchFileList = useCallback(async (currentPage = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      const res = await getFileList({ page, pageSize, forUse: 1 });
+      const res = await getFileList({ currentPage, pageSize, forUse: 1 });
       setFileList(res.list);
-      setPagination(prev => ({ ...prev, current: page, pageSize, total: res.total }));
+      setPagination(prev => ({ ...prev, current: currentPage, pageSize, total: res.total }));
     } catch {
       // 错误已在拦截器处理
     } finally {
@@ -228,7 +228,7 @@ export default function AlarmData() {
 
   return (
     <div>
-      <h2>警情数据</h2>
+      <h2 style={{ marginBottom: 16 }}>警情数据</h2>
 
       <Card
         title={

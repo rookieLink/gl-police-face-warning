@@ -2,7 +2,8 @@ import axios from 'axios';
 import { message } from 'antd';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5001',
+  // baseURL: 'http://localhost:5001',
+  baseURL: 'http://50.32.42.5:9003',
   timeout: 30000,
 });
 
@@ -58,7 +59,7 @@ export interface FileItem {
 }
 
 export interface FileListParams {
-  page?: number;
+  currentPage?: number;
   pageSize?: number;
   forUse?: number;
 }

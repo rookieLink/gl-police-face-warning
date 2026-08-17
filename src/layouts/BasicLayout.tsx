@@ -260,8 +260,8 @@ export default function BasicLayout() {
             left: 0,
             bottom: 0,
             zIndex: 99,
-            overflow: 'auto',
             background: 'rgb(24, 144, 255)',
+            overflow: 'auto',
           }}
         >
           <Menu
@@ -286,7 +286,6 @@ export default function BasicLayout() {
           style={{
             marginLeft: collapsed ? 80 : 220,
             transition: 'margin-left 0.2s',
-            minHeight: 'calc(100vh - 64px)',
           }}
         >
           <div style={{ padding: '12px 24px', background: '#f5f5f5', borderBottom: '1px solid #f0f0f0', position: 'sticky', top: 64, zIndex: 50 }}>
@@ -298,7 +297,6 @@ export default function BasicLayout() {
               padding: '12px 12px 40px 12px',
               background: '#fff',
               borderRadius: 8,
-              overflow: 'auto',
             }}
           >
             <Outlet />

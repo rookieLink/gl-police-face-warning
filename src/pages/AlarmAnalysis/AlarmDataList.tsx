@@ -152,7 +152,7 @@ export default function AlarmDataList() {
           dataSource={dataList}
           rowKey={(_, index) => String(index)}
           loading={loading}
-          scroll={{ x: 1500, y: 'calc(100vh - 340px)' }}
+          scroll={{ x: 1500 }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,

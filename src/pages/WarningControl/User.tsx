@@ -357,7 +357,7 @@ export default function User() {
         columns={columns}
         dataSource={dataSource}
         loading={loading}
-        scroll={{ x: 1200, y: 'calc(100vh - 380px)' }}
+        scroll={{ x: 1200 }}
         pagination={{
           ...pagination,
           showSizeChanger: true,
