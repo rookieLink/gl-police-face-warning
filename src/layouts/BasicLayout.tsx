@@ -51,7 +51,7 @@ const routeConfig: RouteConfig[] = [
   },
   {
     path: '/warning-control',
-    label: '盗窃预警管控',
+    label: '盗窃预警（盯人）',
     icon: <WarningOutlined />,
     children: [
       { path: '/warn', label: '预警人员', icon: <TeamOutlined /> },
@@ -61,7 +61,7 @@ const routeConfig: RouteConfig[] = [
   },
   {
     path: '/alarm-analysis',
-    label: '警情分析',
+    label: '警情分析（控地）',
     icon: <AlertFilled />,
     children: [
       { path: '/alarm-analysis/data', label: '警情数据', icon: <FileSearchOutlined /> },

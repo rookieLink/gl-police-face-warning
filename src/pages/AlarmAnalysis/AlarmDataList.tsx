@@ -68,9 +68,9 @@ export default function AlarmDataList() {
       },
     },
     {
-      title: '接警类别',
-      dataIndex: 'call_type',
-      key: 'call_type',
+      title: '处警类别',
+      dataIndex: 'disp_type',
+      key: 'disp_type',
       width: 120,
     },
     {
@@ -87,18 +87,18 @@ export default function AlarmDataList() {
       width: 250,
       ellipsis: true,
     },
-    {
-      title: '天气情况',
-      dataIndex: 'weather',
-      key: 'weather',
-      width: 100,
-    },
-    {
-      title: '事发星期',
-      dataIndex: 'weekday',
-      key: 'weekday',
-      width: 100,
-    },
+    // {
+    //   title: '天气情况',
+    //   dataIndex: 'weather',
+    //   key: 'weather',
+    //   width: 100,
+    // },
+    // {
+    //   title: '事发星期',
+    //   dataIndex: 'weekday',
+    //   key: 'weekday',
+    //   width: 100,
+    // },
     {
       title: '处警结果',
       dataIndex: 'result',

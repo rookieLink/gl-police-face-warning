@@ -160,7 +160,7 @@ export default function AlarmVisualization() {
     radius: 0.8,
     innerRadius: 0.6,
     label: {
-      text: 'name',
+      text: (d: PieDataItem) => `${d.name}\n${d.num}`,
       position: 'outside',
     },
     legend: {

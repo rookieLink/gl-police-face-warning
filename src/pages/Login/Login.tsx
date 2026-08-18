@@ -130,7 +130,7 @@ export default function Login() {
           </Form.Item>
         </Form>
 
-        <div className="divider-text">
+        {/* <div className="divider-text">
           <span>其他登录方式</span>
         </div>
 
@@ -138,7 +138,7 @@ export default function Login() {
           <div className="social-btn"><WechatOutlined /></div>
           <div className="social-btn"><QqOutlined /></div>
           <div className="social-btn"><GithubOutlined /></div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
