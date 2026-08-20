@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Card, Upload, message, Select, Space, Typography } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
+import { Card, Upload, message, Select, Space, Typography, Button } from 'antd';
+import { InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import type { UploadFile, UploadProps } from 'antd';
 import { uploadFile } from '../../services/file';
 
 const { Dragger } = Upload;
@@ -9,30 +9,49 @@ const { Text } = Typography;
 
 const forUseOptions = [
   { value: 1, label: '警情分析' },
+  { value: 2, label: '队伍质态' },
   { value: 0, label: '其他' },
 ];
 
 export default function FileUpload() {
   const [forUse, setForUse] = useState<number>(1);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-  const handleUpload: UploadProps['customRequest'] = async (options) => {
-    const { file, onSuccess, onError } = options;
-    const uploadFileObj = file as File;
+  const handleUpload = async () => {
+    if (fileList.length === 0) {
+      message.warning('请先选择文件');
+      return;
+    }
 
-    try {
-      const result = await uploadFile(uploadFileObj, forUse);
-      onSuccess?.(result);
-      message.success(`${uploadFileObj.name} 上传成功`);
-    } catch (error) {
-      onError?.(error as Error);
+    setUploading(true);
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const file of fileList) {
+      try {
+        await uploadFile(file.originFileObj as File, forUse);
+        successCount++;
+      } catch {
+        failCount++;
+      }
+    }
+
+    setUploading(false);
+    setFileList([]);
+
+    if (successCount > 0) {
+      message.success(`成功上传 ${successCount} 个文件`);
+    }
+    if (failCount > 0) {
+      message.error(`${failCount} 个文件上传失败`);
     }
   };
 
   const uploadProps: UploadProps = {
     name: 'file',
     multiple: true,
-    customRequest: handleUpload,
-    showUploadList: false,
+    fileList,
     accept: '.xls,.xlsx,.csv',
     beforeUpload: (file) => {
       const isLt10M = file.size / 1024 / 1024 < 10;
@@ -45,16 +64,20 @@ export default function FileUpload() {
         message.error('仅支持 Excel 数据表文件（.xls, .xlsx, .csv）');
         return false;
       }
-      return true;
+      return false;
+    },
+    onChange: ({ fileList: newFileList }) => {
+      setFileList(newFileList);
+    },
+    onRemove: (file) => {
+      setFileList(fileList.filter((item) => item.uid !== file.uid));
     },
   };
 
   return (
-    <div>
-      <h2 style={{ marginBottom: 16 }}>文件上传</h2>
-
-      <Card>
-        <div style={{ marginBottom: 16 }}>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Card style={{ width: 600 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <Space align="center">
             <Text>数据用途：</Text>
             <Select
@@ -64,16 +87,27 @@ export default function FileUpload() {
               style={{ width: 150 }}
             />
           </Space>
+          <Dragger {...uploadProps} style={{ width: '100%' }}>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">点击或拖拽文件到此区域</p>
+            <p className="ant-upload-hint">
+              支持单个或批量上传，仅支持 Excel 数据表文件（.xls, .xlsx, .csv），单个文件不超过 10MB
+            </p>
+          </Dragger>
+          <Button
+            type="primary"
+            icon={<UploadOutlined />}
+            onClick={handleUpload}
+            loading={uploading}
+            disabled={fileList.length === 0}
+            size="large"
+            style={{ width: 200 }}
+          >
+            {uploading ? '上传中...' : '开始上传'}
+          </Button>
         </div>
-        <Dragger {...uploadProps}>
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
-          <p className="ant-upload-hint">
-            支持单个或批量上传，仅支持 Excel 数据表文件（.xls, .xlsx, .csv），单个文件不超过 10MB
-          </p>
-        </Dragger>
       </Card>
     </div>
   );

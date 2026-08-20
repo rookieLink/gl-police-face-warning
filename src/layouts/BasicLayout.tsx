@@ -22,6 +22,7 @@ import {
   WarningOutlined,
   FileSearchOutlined,
   AlertFilled,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 import type { ReactNode } from 'react';
 
@@ -40,15 +41,15 @@ const routeConfig: RouteConfig[] = [
     label: '首页',
     icon: <HomeOutlined />,
   },
-  {
-    path: '/dashboard',
-    label: '仪表盘',
-    icon: <DashboardOutlined />,
-    children: [
-      { path: '/dashboard/overview', label: '数据概览' },
-      { path: '/dashboard/analysis', label: '统计分析' },
-    ],
-  },
+  // {
+  //   path: '/dashboard',
+  //   label: '仪表盘',
+  //   icon: <DashboardOutlined />,
+  //   children: [
+  //     { path: '/dashboard/overview', label: '数据概览' },
+  //     { path: '/dashboard/analysis', label: '统计分析' },
+  //   ],
+  // },
   {
     path: '/warning-control',
     label: '盗窃预警（盯人）',
@@ -67,6 +68,14 @@ const routeConfig: RouteConfig[] = [
       { path: '/alarm-analysis/data', label: '警情数据', icon: <FileSearchOutlined /> },
       // { path: '/alarm-analysis/detail', label: '数据详情', icon: <InfoCircleOutlined /> },
       // { path: '/alarm-analysis/visualization', label: '可视化分析', icon: <LineChartOutlined /> },
+    ],
+  },
+  {
+    path: '/team-quality',
+    label: '队伍质态',
+    icon: <ExperimentOutlined />,
+    children: [
+      { path: '/team-quality/data', label: '考核数据', icon: <FileSearchOutlined /> },
     ],
   },
   {
@@ -234,7 +243,7 @@ export default function BasicLayout() {
       >
         <Space>
           <span style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
-            巡防预警
+            鼓楼分局巡特警大队警务工作服务一中队
           </span>
         </Space>
         <Dropdown

@@ -14,6 +14,8 @@ import DataPreview from './pages/FileManagement/DataPreview'
 import AlarmData from './pages/AlarmAnalysis/AlarmData'
 import AlarmDataList from './pages/AlarmAnalysis/AlarmDataList'
 import AlarmVisualization from './pages/AlarmAnalysis/AlarmVisualization'
+import TeamQualityData from './pages/TeamQuality/TeamQualityData'
+import TeamQualityVisualization from './pages/TeamQuality/TeamQualityVisualization'
 import './App.scss'
 
 function App() {
@@ -38,6 +40,11 @@ function App() {
         <Route path="/alarm-analysis/data" element={<AlarmData />} />
         <Route path="/alarm-analysis/detail" element={<AlarmDataList />} />
         <Route path="/alarm-analysis/visualization" element={<AlarmVisualization />} />
+        <Route path="/team-quality" element={<Navigate to="/team-quality/data" replace />} />
+        <Route path="/team-quality/data" element={<TeamQualityData />} />
+        <Route path="/team-quality/analysis" element={<TeamQualityVisualization />} />
+        <Route path="/team-quality/detail" element={<TeamQualityVisualization />} />
+        <Route path="/team-quality/visualization" element={<TeamQualityVisualization />} />
         <Route path="/content" element={<Navigate to="/content/article" replace />} />
         <Route path="/content/article" element={<Home />} />
         <Route path="/content/category" element={<Home />} />
